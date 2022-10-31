@@ -17,26 +17,29 @@ cubicz <- read.csv("cubic_zirconia.csv")
 ```
 
 ```{r}
+summary(cubicz)
 str(cubicz)
 ```
 
 # Clean Data
 
 ```{r}
+# Remove the index variable "X"
 cubicz$X <- NULL
+# Make certain variables to be a factor
 cubicz$cut <- as.factor(cubicz$cut)
 cubicz$color <- as.factor(cubicz$color)
 cubicz$clarity <- as.factor(cubicz$clarity)
-#cubicz$depth <- ifelse(is.na(cubicz$depth) == TRUE, mean(cubicz$depth),cubicz$depth)
-#cubic <- tapply(ifelse(is.na(cubicz$depth) == TRUE,mean,na.rm=T))
+
+# Change NA values of depth to be the mean depth (using mean since mean and median are close in value)
+mean_depth <- mean(cubicz$depth, na.rm = TRUE)
+cubicz$depth <- ifelse(is.na(cubicz$depth) == TRUE, mean_depth, cubicz$depth)
+
 str(cubicz)
 summary(cubicz)
-summary(cubicz$depth)
-cubicz$depth <- ifelse((is.na(cubicz$depth) == TRUE), mean(cubicz$depth), cubicz$depth)
-summary(cubicz$depth)
 ```
 
-Before moving to the analysis of the data set, we cleaned the data to prepare it for regression. The variable of X is an index variable, which is not necessary for our analysis. Cut, Color, and Clarity all have a clear number of levels, so we converted those variables into factors. 
+Before moving to the analysis of the data set, we cleaned the data to prepare it for regression. The variable of X is an index variable, which is not necessary for our analysis. Cut, color, and clarity all have a clear number of levels, so we converted those variables into factors. We changed NA values for depth to be the mean depth. We used the mean depth since the mean and median of depth are close in value.
 
 # Regression
 
@@ -45,3 +48,4 @@ cubicz_model <- lm(price ~ ., data = cubicz)
 summary(cubicz_model)
 ```
 
+We ran a linear regression model on the cleaned data with the predictor variable price and included all predictor variables. From doing this, we see that only variables y and x are not statistically significant at an alpha level of 0.05. All other predictor variables are statistically significant at an alpha level of 0.05 (and all of those are even statistically significant at an alpha level of 0.001). Because of having many statistically significant predictor variables at an alpha level of 0.05, we decided to go ahead and choose this dataset to use in this project to predict the price of cubic zirconia.
