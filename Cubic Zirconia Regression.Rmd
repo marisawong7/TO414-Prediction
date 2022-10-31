@@ -1,0 +1,44 @@
+---
+title: "Cubic Zirconia"
+author: "Ally Weingarden"
+date: "2022-10-27"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+cubicz <- read.csv("cubic_zirconia.csv")
+```
+
+```{r}
+str(cubicz)
+```
+
+# Clean Data
+
+```{r}
+cubicz$X <- NULL
+cubicz$cut <- as.factor(cubicz$cut)
+cubicz$color <- as.factor(cubicz$color)
+cubicz$clarity <- as.factor(cubicz$clarity)
+#cubicz$depth <- ifelse(is.na(cubicz$depth) == TRUE, mean(cubicz$depth),cubicz$depth)
+#cubic <- tapply(ifelse(is.na(cubicz$depth) == TRUE,mean,na.rm=T))
+str(cubicz)
+summary(cubicz)
+summary(cubicz$depth)
+cubicz$depth <- ifelse((is.na(cubicz$depth) == TRUE), mean(cubicz$depth), cubicz$depth)
+summary(cubicz$depth)
+```
+
+# Regression
+
+```{r}
+cubicz_model <- lm(price ~ ., data = cubicz)
+summary(cubicz_model)
+```
+
