@@ -8,9 +8,9 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Data from: https://www.kaggle.com/datasets/colearninglounge/gemstone-price-prediction?select=cubic_zirconia.csv
+Data is from: https://www.kaggle.com/datasets/colearninglounge/gemstone-price-prediction?select=cubic_zirconia.csv
 
-For the second group project, we have chosen a dataset on cubic zirconia. This dataset has 10 variables which includes the price as well as various characteristics about the cubic zirconia. In our project, we would predict the price of a cubic zirconia, given certain characteristics. This addresses the business problem of setting prices for a seller's inventory of cubic zirconia since it is important to set reasonable prices based on what other similar cubic zirconia are selling for.
+For the second group project, we have chosen a dataset on cubic zirconia. This dataset has 10 variables (excluding the index variable) which includes the price as well as various characteristics about the cubic zirconia. In our project, we would predict the price of a cubic zirconia, given certain characteristics. Our business question is how should we price cubic zirconia based on certain characteristics of it? We will answer this question by creating models to predict the price using a variety of characteristics about cubic zirconia. This addresses the business problem of setting prices for a seller's inventory of cubic zirconia since it is important to set reasonable prices based on what other similar cubic zirconia are selling for.
 
 ```{r}
 cubicz <- read.csv("cubic_zirconia.csv")
@@ -39,7 +39,7 @@ str(cubicz)
 summary(cubicz)
 ```
 
-Before moving to the analysis of the data set, we cleaned the data to prepare it for regression. The variable of X is an index variable, which is not necessary for our analysis. Cut, color, and clarity all have a clear number of levels, so we converted those variables into factors. We changed NA values for depth to be the mean depth. We used the mean depth since the mean and median of depth are close in value.
+Before moving to the analysis of the data set, we cleaned the data to prepare it for regression. The variable of X is an index variable, which is not necessary for our analysis. Cut, color, and clarity all have a clear number of levels, so we converted those variables into factors. We changed NA values for depth to be the mean depth. We used the mean depth since the mean and median values of depth are close in value.
 
 # Regression
 
@@ -48,4 +48,4 @@ cubicz_model <- lm(price ~ ., data = cubicz)
 summary(cubicz_model)
 ```
 
-We ran a linear regression model on the cleaned data with the predictor variable price and included all predictor variables. From doing this, we see that only variables y and x are not statistically significant at an alpha level of 0.05. All other predictor variables are statistically significant at an alpha level of 0.05 (and all of those are even statistically significant at an alpha level of 0.001). Because of having many statistically significant predictor variables at an alpha level of 0.05, we decided to go ahead and choose this dataset to use in this project to predict the price of cubic zirconia.
+We ran a linear regression model on the cleaned data with the response variable price and included all predictor variables. From doing this, we see that only variables y and z are not statistically significant at an alpha level of 0.05. All other predictor variables are statistically significant at an alpha level of 0.05 (and all of those are even statistically significant at an alpha level of 0.001). Because of having many statistically significant predictor variables at an alpha level of 0.05, we decided to go ahead and choose this dataset to use in this project to predict the price of cubic zirconia.
