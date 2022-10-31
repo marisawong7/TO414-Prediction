@@ -36,6 +36,8 @@ cubicz$depth <- ifelse((is.na(cubicz$depth) == TRUE), mean(cubicz$depth), cubicz
 summary(cubicz$depth)
 ```
 
+Before moving to the analysis of the data set, we cleaned the data to prepare it for regression. The variablee of X is an index variable, which is not necessary for our analysis. Cut, Color, and Clarity all have a clear number of levels, so we converted those variables into factors. 
+
 # Regression
 
 ```{r}
