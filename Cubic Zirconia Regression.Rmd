@@ -1,7 +1,6 @@
 ---
 title: "Cubic Zirconia"
-author: "Ally Weingarden"
-date: "2022-10-27"
+author: "Ally Weingarden, Juliet Niebylski, Ziying Peng, Leah Sun, Marisa Wong"
 output: html_document
 ---
 
@@ -9,7 +8,9 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+Data from: https://www.kaggle.com/datasets/colearninglounge/gemstone-price-prediction?select=cubic_zirconia.csv
+
+For the second group project, we have chosen a dataset on cubic zirconia. This dataset has 10 variables which includes the price as well as various characteristics about the cubic zirconia. In our project, we would predict the price of a cubic zirconia, given certain characteristics. This addresses the business problem of setting prices for a seller's inventory of cubic zirconia since it is important to set reasonable prices based on what other similar cubic zirconia are selling for.
 
 ```{r}
 cubicz <- read.csv("cubic_zirconia.csv")
