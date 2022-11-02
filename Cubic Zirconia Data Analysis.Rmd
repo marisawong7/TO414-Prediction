@@ -77,9 +77,13 @@ summary(test_cubicz)
 ```{r}
 # Main effects model
 model1 <- lm(price ~ ., train_cubicz)
+summary(model1)
 # Predict price for testing data
 prediction_values_lm1 <- predict(model1, test_cubicz)
 summary(prediction_values_lm1)
+# Calculate difference between actual price and predicted price
+actual_vs_expected_diff_lm1 <- test_cubicz$price - prediction_values_lm1
+summary(actual_vs_expected_diff_lm1)
 ```
 
 QUESTIONS:
