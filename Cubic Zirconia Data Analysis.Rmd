@@ -89,7 +89,7 @@ QUESTIONS:
 
 3. How to test goodness of estimation?
 
-4. Not sure how accurate the data is since couldn't find info about using the letter color scale and clarity coding that the dataset uses for cubic zirconia (seems like they are using diamond coding).
+4. Not sure how accurate the data is since couldn't find info about using the letter color scale and clarity coding that the dataset uses for cubic zirconia (seems like they are using diamond coding). Should we instead use the diamond dataset the professor had mentioned?
 
 
 Aside: Resources on Cubic Zirconia:
