@@ -1,0 +1,102 @@
+---
+title: "Cubic Zirconia"
+author: "Ally Weingarden, Juliet Niebylski, Ziying Peng, Leah Sun, Marisa Wong"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Data is from: https://www.kaggle.com/datasets/colearninglounge/gemstone-price-prediction?select=cubic_zirconia.csv
+
+For the second group project, we have chosen a dataset on cubic zirconia. This dataset has 10 variables (excluding the index variable) which includes the price as well as various characteristics about the cubic zirconia. There are 26967 observations of data in this dataset. Our business question is: how should we price cubic zirconia based on certain characteristics? We will answer this question by creating models to predict the price using a variety of characteristics about cubic zirconia. This addresses the business problem of setting prices for a seller's inventory of cubic zirconia since it is important to set reasonable prices based on what other similar cubic zirconia are selling for.
+
+```{r}
+cubicz <- read.csv("cubic_zirconia.csv")
+```
+
+```{r}
+summary(cubicz)
+str(cubicz)
+```
+
+# Clean Data
+
+```{r}
+# Remove the index variable "X"
+cubicz$X <- NULL
+# Make certain variables to be a factor
+cubicz$cut <- as.factor(cubicz$cut)
+cubicz$color <- as.factor(cubicz$color)
+cubicz$clarity <- as.factor(cubicz$clarity)
+
+# Change NA values of depth to be the mean depth (using mean since mean and median are close in value)
+mean_depth <- mean(cubicz$depth, na.rm = TRUE)
+cubicz$depth <- ifelse(is.na(cubicz$depth) == TRUE, mean_depth, cubicz$depth)
+
+str(cubicz)
+summary(cubicz)
+```
+
+Before moving to the analysis of the data set, we cleaned the data to prepare it for regression. The variable of X is an index variable, which is not necessary for our analysis. Cut, color, and clarity all have a clear number of levels, so we converted those variables into factors. We changed NA values for depth to be the mean depth. We used the mean depth since the mean and median values of depth are close in value.
+
+# Regression
+
+```{r}
+cubicz_model <- lm(price ~ ., data = cubicz)
+summary(cubicz_model)
+```
+
+We ran a linear regression model on the cleaned data with the response variable price and included all predictor variables. From doing this, we see that only variables y and z are not statistically significant at an alpha level of 0.05. All other predictor variables are statistically significant at an alpha level of 0.05 (and all of those are even statistically significant at an alpha level of 0.001). Because of having many statistically significant predictor variables at an alpha level of 0.05, we decided to go ahead and choose this dataset to use in this project to predict the price of cubic zirconia.
+
+# Split Data into Training and Testing Data
+
+```{r}
+# Get value of 70% of the data
+num_training_data <- round(0.7 * nrow(cubicz))
+
+# Get random sample of indexes for the training data
+set.seed(123) # Set a seed
+train_index <- sample(x = c(1:nrow(cubicz)), size = num_training_data, replace = FALSE)
+
+# Get training data based on the train_index values randomly selected
+train_cubicz <- cubicz[train_index,]
+# Get testing data
+test_cubicz <- cubicz[-train_index,]
+# Check: make sure the number of values in training set and testing set 
+# add to the number of rows in the original dataset
+nrow(cubicz) == nrow(train_cubicz) + nrow(test_cubicz)
+# Get summary of training and test data, make sure similar distribution of price values
+summary(train_cubicz)
+summary(test_cubicz)
+```
+
+# Do Linear Regression on Training Set, Predict Price for Testing Set
+
+```{r}
+# Main effects model
+model1 <- lm(price ~ ., train_cubicz)
+# Predict price for testing data
+prediction_values_lm1 <- predict(model1, test_cubicz)
+summary(prediction_values_lm1)
+```
+
+QUESTIONS:
+1. Why are there negative prices predicted? 
+
+2. Is there a way to ensure that the price is positive?
+
+3. How to test goodness of estimation?
+
+4. Not sure how accurate the data is since couldn't find info about using the letter color scale and clarity coding that the dataset uses for cubic zirconia (seems like they are using diamond coding).
+
+
+Aside: Resources on Cubic Zirconia:
+https://www.firemountaingems.com/resources/encyclobeadia/gem-notes/hb1f
+
+https://www.thespruce.com/cubic-zirconia-information-2043824 
+
+https://www.jewelry-secrets.com/Blog/cubic-zirconia-grading/ 
+
+Info about diamonds: https://www.forevermark.com/en-us/now-forever/guides/diamond-engagement-guide/diamond-color-and-clarity/
