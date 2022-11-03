@@ -26,7 +26,7 @@ str(diamonds)
 
 ```{r}
 # Make certain variables to be a factor 
-# Question: What is an ordinary factor? vs factor?
+# cut, color, clarity 
 diamonds$cut <- as.factor(diamonds$cut)
 diamonds$color <- as.factor(diamonds$color)
 diamonds$clarity <- as.factor(diamonds$clarity)
@@ -78,7 +78,7 @@ summary(model1)
 prediction_values_lm1 <- predict(model1, test_diamonds)
 summary(prediction_values_lm1)
 # Calculate difference between actual price and predicted price
-actual_vs_expected_diff_lm1 <- test_cubicz$price - prediction_values_lm1
+actual_vs_expected_diff_lm1 <- test_diamonds$price - prediction_values_lm1
 summary(actual_vs_expected_diff_lm1)
 ```
 
