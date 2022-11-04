@@ -27,9 +27,9 @@ str(diamonds)
 ```{r}
 # Make certain variables to be a factor 
 # cut, color, clarity 
-diamonds$cut <- as.factor(diamonds$cut)
-diamonds$color <- as.factor(diamonds$color)
-diamonds$clarity <- as.factor(diamonds$clarity)
+diamonds$cut <- factor(diamonds$cut, ordered = FALSE)
+diamonds$color <- factor(diamonds$color, ordered = FALSE)
+diamonds$clarity <- factor(diamonds$clarity, ordered = FALSE)
 
 str(diamonds)
 summary(diamonds)
