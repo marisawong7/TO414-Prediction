@@ -1,5 +1,5 @@
 ---
-title: "Cubic Zirconia"
+title: "Diamond Data Analysis"
 author: "Ally Weingarden, Juliet Niebylski, Ziying Peng, Leah Sun, Marisa Wong"
 output: html_document
 ---
