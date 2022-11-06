@@ -1,0 +1,120 @@
+---
+title: "Cubic Zirconia"
+author: "Ally Weingarden, Juliet Niebylski, Ziying Peng, Leah Sun, Marisa Wong"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Data is from: https://www.kaggle.com/datasets/colearninglounge/gemstone-price-prediction?select=cubic_zirconia.csv
+
+For the second group project, we have chosen a dataset on cubic zirconia. This dataset has 10 variables (excluding the index variable) which includes the price as well as various characteristics about the cubic zirconia. There are 26967 observations of data in this dataset. Our business question is: how should we price cubic zirconia based on certain characteristics? We will answer this question by creating models to predict the price using a variety of characteristics about cubic zirconia. This addresses the business problem of setting prices for a seller's inventory of cubic zirconia since it is important to set reasonable prices based on what other similar cubic zirconia are selling for.
+
+```{r}
+library(ggplot2)
+```
+
+```{r}
+diamonds <- diamonds
+summary(diamonds)
+str(diamonds)
+```
+
+# Clean Data
+
+```{r}
+# Make certain variables to be a factor 
+# cut, color, clarity 
+diamonds$cut <- factor(diamonds$cut, ordered = FALSE)
+diamonds$color <- factor(diamonds$color, ordered = FALSE)
+diamonds$clarity <- factor(diamonds$clarity, ordered = FALSE)
+
+str(diamonds)
+summary(diamonds)
+```
+
+Before moving to the analysis of the data set, we cleaned the data to prepare it for regression. The variable of X is an index variable, which is not necessary for our analysis. Cut, color, and clarity all have a clear number of levels, so we converted those variables into factors. We changed NA values for depth to be the mean depth. We used the mean depth since the mean and median values of depth are close in value.
+
+# Regression
+
+```{r}
+diamonds_model <- lm(price ~ ., data = diamonds)
+summary(diamonds_model)
+```
+
+We ran a linear regression model on the cleaned data with the response variable price and included all predictor variables. From doing this, we see that only variables y and z are not statistically significant at an alpha level of 0.05. All other predictor variables are statistically significant at an alpha level of 0.05 (and all of those are even statistically significant at an alpha level of 0.001). Because of having many statistically significant predictor variables at an alpha level of 0.05, we decided to go ahead and choose this dataset to use in this project to predict the price of cubic zirconia.
+
+# Split Data into Training and Testing Data
+
+```{r}
+# Get value of 70% of the data
+num_training_data <- round(0.7 * nrow(diamonds))
+
+# Get random sample of indexes for the training data
+set.seed(123) # Set a seed
+train_index <- sample(x = c(1:nrow(diamonds)), size = num_training_data, replace = FALSE)
+
+# Get training data based on the train_index values randomly selected
+train_diamonds <- diamonds[train_index,]
+# Get testing data
+test_diamonds <- diamonds[-train_index,]
+# Check: make sure the number of values in training set and testing set 
+# add to the number of rows in the original dataset
+nrow(diamonds) == nrow(train_diamonds) + nrow(test_diamonds)
+# Get summary of training and test data, make sure similar distribution of price values
+summary(train_diamonds)
+summary(test_diamonds)
+```
+
+# Do Linear Regression on Training Set, Predict Price for Testing Set
+
+```{r}
+# Main effects model
+model1 <- lm(price ~ ., train_diamonds)
+summary(model1)
+# Predict price for testing data
+prediction_values_lm1 <- predict(model1, test_diamonds)
+summary(prediction_values_lm1)
+# Calculate difference between actual price and predicted price
+actual_vs_expected_diff_lm1 <- test_diamonds$price - prediction_values_lm1
+summary(actual_vs_expected_diff_lm1)
+```
+
+QUESTIONS:
+1. Why are there negative prices predicted? 
+
+ways to censor the data, don't worry about this right now (for questions 1 and 2)
+
+2. Is there a way to ensure that the price is positive?
+
+3. How to test goodness of estimation?
+
+caret package: use RMSE, MAE, R^2 postResample (will calculate all three metrics)
+
+4. Not sure how accurate the data is since couldn't find info about using the letter color scale and clarity coding that the dataset uses for cubic zirconia (seems like they are using diamond coding). Should we instead use the diamond dataset the professor had mentioned?
+
+switch over to diamonds data from ggplot2, don't need to redo the first deliverable
+
+5. When are the other deliverables due?
+
+- second deliverable due sometime before Thanksgiving
+
+Model specifications:
+- interactions
+- non-linear terms
+- KNN reg package
+- neural network
+- decision tree (regression trees), package CART or PARTYCIT
+- SVM (support vector machines)
+- random forest for continuous data
+
+Aside: Resources on Cubic Zirconia:
+https://www.firemountaingems.com/resources/encyclobeadia/gem-notes/hb1f
+
+https://www.thespruce.com/cubic-zirconia-information-2043824 
+
+https://www.jewelry-secrets.com/Blog/cubic-zirconia-grading/ 
+
+Info about diamonds: https://www.forevermark.com/en-us/now-forever/guides/diamond-engagement-guide/diamond-color-and-clarity/
