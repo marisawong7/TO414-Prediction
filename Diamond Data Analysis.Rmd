@@ -91,7 +91,7 @@ ways to censor the data, don't worry about this right now (for questions 1 and 2
 
 3. How to test goodness of estimation?
 
-caret package: use RMSE, MAE, R^2 postResample (will calculate all three metrics)
+caret package: use RMSE (lower is better), MAE (lower is better), R^2 (larger is better) postResample in Caret (will calculate all three metrics)
 
 4. Not sure how accurate the data is since couldn't find info about using the letter color scale and clarity coding that the dataset uses for cubic zirconia (seems like they are using diamond coding). Should we instead use the diamond dataset the professor had mentioned?
 
@@ -104,11 +104,11 @@ switch over to diamonds data from ggplot2, don't need to redo the first delivera
 Model specifications:
 
 - Linear models (can include interactions and non-linear terms)
-- KNN reg package
-- neural network
-- decision tree (regression trees), package CART or PARTYCIT
-- SVM (support vector machines)
-- random forest for continuous data
+- KNN reg package, use KNNreg function in caret
+- neural network (use as normal)
+- decision tree (regression trees), package CART or PARTYCIT RPART
+- SVM (support vector machines) (try to use as normal)
+- random forest for continuous data, RPART or CART
 
 Aside: Resources on Cubic Zirconia:
 https://www.firemountaingems.com/resources/encyclobeadia/gem-notes/hb1f
