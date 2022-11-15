@@ -88,7 +88,7 @@ postResample(prediction_values_lm1, test_diamonds$price)
 # KNN Regression
 
 ```{r}
-knnreg_model1 <- knnreg(x = train_diamonds[,-7], test = train_diamonds[,-7], y = train_diamonds$price, k = 5)
+knnreg_model1 <- knnreg(price ~ ., data = train_diamonds, k = 5)
 summary(knnreg_model1)
 prediction_values_knn1 <- predict(knnreg_model1, test_diamonds)
 
@@ -98,7 +98,7 @@ prediction_values_knn1 <- predict(knnreg_model1, test_diamonds)
 
 ```{r}
 library(neuralnet)
-
+# need to break into dummy variables
 ANN_model1 <- neuralnet(formula = price ~ ., data = train_diamonds)
 ```
 
@@ -123,7 +123,8 @@ postResample(prediction_values_SVM1, test_diamonds$price)
 # Random Forest
 
 ```{r}
-
+library(randomForest)
+random_forest_model1 <- randomForest(price ~ ., data = train_diamonds)
 ```
 
 QUESTIONS:
@@ -152,12 +153,12 @@ switch over to diamonds data from ggplot2, don't need to redo the first delivera
 
 Model specifications:
 
-- Linear models (can include interactions and non-linear terms)
-- KNN reg package, use KNNreg function in caret
-- neural network (use as normal)
-- decision tree (regression trees), package CART or PARTYCIT RPART <- do later
-- SVM (support vector machines) (try to use as normal)
-- random forest for continuous data, RPART or CART <- do later
+- Linear models (can include interactions and non-linear terms) <- Ally
+- KNN reg package, use KNNreg function in caret <- Ziying
+- neural network (use as normal) <- Leah
+- decision tree (regression trees), package CART or PARTYCIT RPART  <- Juliet
+- SVM (support vector machines) (try to use as normal) <- Marisa
+- random forest for continuous data, RPART or CART <- Juliet
 
 Regression tree resource: https://www.geeksforgeeks.org/decision-tree-for-regression-in-r-programming/
 
