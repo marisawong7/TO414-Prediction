@@ -85,6 +85,8 @@ summary(actual_vs_expected_diff_lm1)
 postResample(prediction_values_lm1, test_diamonds$price)
 ```
 
+# KNN Regression
+
 ```{r}
 knnreg_model1 <- knnreg(x = train_diamonds[,-7], test = train_diamonds[,-7], y = train_diamonds$price, k = 5)
 summary(knnreg_model1)
@@ -92,15 +94,24 @@ prediction_values_knn1 <- predict(knnreg_model1, test_diamonds)
 
 ```
 
+# ANN 
+
 ```{r}
 library(neuralnet)
 
 ANN_model1 <- neuralnet(formula = price ~ ., data = train_diamonds)
 ```
 
-```{r}
+# Regression Tree
 
+```{r}
+library(rpart)
+reg_tree_1 <- rpart(formula = price ~ ., data = train_diamonds)
+prediction_values_reg_tree1 <- predict(reg_tree_1, test_diamonds)
+postResample(prediction_values_reg_tree1, test_diamonds$price)
 ```
+
+# SVM
 
 ```{r}
 library(kernlab)
@@ -109,7 +120,11 @@ prediction_values_SVM1 <- predict(SVM_model1, test_diamonds)
 postResample(prediction_values_SVM1, test_diamonds$price)
 ```
 
+# Random Forest
 
+```{r}
+
+```
 
 QUESTIONS:
 1. Why are there negative prices predicted? 
