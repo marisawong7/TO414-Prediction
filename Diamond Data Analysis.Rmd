@@ -102,8 +102,8 @@ switch over to diamonds data from ggplot2, don't need to redo the first delivera
 - second deliverable due sometime before Thanksgiving
 
 Model specifications:
-- interactions
-- non-linear terms
+
+- Linear models (can include interactions and non-linear terms)
 - KNN reg package
 - neural network
 - decision tree (regression trees), package CART or PARTYCIT
