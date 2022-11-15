@@ -89,6 +89,7 @@ postResample(prediction_values_lm1, test_diamonds$price)
 knnreg_model1 <- knnreg(x = train_diamonds[,-7], test = train_diamonds[,-7], y = train_diamonds$price, k = 5)
 summary(knnreg_model1)
 prediction_values_knn1 <- predict(knnreg_model1, test_diamonds)
+
 ```
 
 ```{r}
@@ -96,6 +97,18 @@ library(neuralnet)
 
 ANN_model1 <- neuralnet(formula = price ~ ., data = train_diamonds)
 ```
+
+```{r}
+
+```
+
+```{r}
+library(kernlab)
+SVM_model1 <- ksvm(price ~ ., data = train_diamonds, kernel = "vanilladot")
+prediction_values_SVM1 <- predict(SVM_model1, test_diamonds)
+postResample(prediction_values_SVM1, test_diamonds$price)
+```
+
 
 
 QUESTIONS:
@@ -130,6 +143,8 @@ Model specifications:
 - decision tree (regression trees), package CART or PARTYCIT RPART <- do later
 - SVM (support vector machines) (try to use as normal)
 - random forest for continuous data, RPART or CART <- do later
+
+Regression tree resource: https://www.geeksforgeeks.org/decision-tree-for-regression-in-r-programming/
 
 Aside: Resources on Cubic Zirconia:
 https://www.firemountaingems.com/resources/encyclobeadia/gem-notes/hb1f
