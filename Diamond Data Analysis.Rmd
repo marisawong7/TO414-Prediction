@@ -91,7 +91,38 @@ postResample(prediction_values_lm1, test_diamonds$price)
 knnreg_model1 <- knnreg(price ~ ., data = train_diamonds, k = 5)
 summary(knnreg_model1)
 prediction_values_knn1 <- predict(knnreg_model1, test_diamonds)
+summary(prediction_values_knn1)
+actual_vs_expected_diff_knn1 <- test_diamonds$price - prediction_values_knn1
+summary(actual_vs_expected_diff_knn1)
 
+postResample(prediction_values_knn1, test_diamonds$price)
+#        RMSE     Rsquared          MAE 
+#1037.3289972    0.9343628  540.2361728 
+
+# # Improving model through changing k
+# knnreg_model2 <- knnreg(price ~ ., data = train_diamonds, k = 10)
+# prediction_values_knn2 <- predict(knnreg_model2, test_diamonds)
+# actual_vs_expected_diff_knn2 <- test_diamonds$price - prediction_values_knn2
+# 
+# postResample(prediction_values_knn2, test_diamonds$price)
+# #        RMSE     Rsquared          MAE 
+# #1056.7784212    0.9343528  553.3987039 
+# 
+# knnreg_model3 <- knnreg(price ~ ., data = train_diamonds, k = 7)
+# prediction_values_knn3 <- predict(knnreg_model3, test_diamonds)
+# actual_vs_expected_diff_knn3 <- test_diamonds$price - prediction_values_knn3
+# 
+# postResample(prediction_values_knn3, test_diamonds$price)
+# #        RMSE     Rsquared          MAE 
+# #1039.6573549    0.9349978  542.4383039 
+# 
+# knnreg_model4 <- knnreg(price ~ ., data = train_diamonds, k = 20)
+# prediction_values_knn4 <- predict(knnreg_model4, test_diamonds)
+# actual_vs_expected_diff_knn4 <- test_diamonds$price - prediction_values_knn4
+# 
+# postResample(prediction_values_knn4, test_diamonds$price)
+# #        RMSE     Rsquared          MAE 
+# #1100.2318281    0.9311135  580.5150942 
 ```
 
 # ANN 
