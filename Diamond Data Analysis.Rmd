@@ -157,17 +157,49 @@ Info about regression trees: https://www.datadriveninvestor.com/2020/04/13/how-d
 # One regression tree made with training data to predict price of testing data
 reg_tree_1 <- rpart(formula = price ~ ., data = train_diamonds)
 prediction_values_reg_tree1 <- predict(reg_tree_1, test_diamonds)
+summary(prediction_values_reg_tree1) # only positive prices predicted
 postResample(prediction_values_reg_tree1, test_diamonds$price)
+# RMSE = 1423.7770949
+# Rsquared = 0.8738465
+# MAE = 909.6853036
 ```
 
 ### Random Forest
 
-#### One random forest made with training data to predict price of testing data
+#### One random forest made with training data to predict price of testing data using 10 trees
 
 ```{r, cache = TRUE}
 random_forest_model1 <- randomForest(price ~ ., data = train_diamonds, ntree = 10)
 prediction_values_random_forest1 <- predict(random_forest_model1, test_diamonds)
+summary(prediction_values_random_forest1) # only positive prices predicted
 postResample(prediction_values_random_forest1, test_diamonds$price)
+# RMSE = 625.1970581
+# Rsquared = 0.9758139
+# MAE = 307.6215889
+```
+
+#### One random forest made with training data to predict price of testing data using 100 trees
+
+```{r, cache = TRUE}
+random_forest_model2 <- randomForest(price ~ ., data = train_diamonds, ntree = 100)
+prediction_values_random_forest2 <- predict(random_forest_model2, test_diamonds)
+summary(prediction_values_random_forest2) # only positive prices predicted
+postResample(prediction_values_random_forest2, test_diamonds$price)
+# RMSE = 588.6442348
+# Rsquared = 0.9785971
+# MAE = 288.6016663
+```
+
+#### One random forest made with training data to predict price of testing data using 500 trees
+
+```{r, cache = TRUE}
+random_forest_model3 <- randomForest(price ~ ., data = train_diamonds)
+prediction_values_random_forest3 <- predict(random_forest_model1, test_diamonds)
+summary(prediction_values_random_forest3) # only positive prices predicted
+postResample(prediction_values_random_forest3, test_diamonds$price)
+# RMSE = 625.1970581
+# Rsquared = 0.9758139
+# MAE = 307.6215889
 ```
 
 #### Tuning random forest
