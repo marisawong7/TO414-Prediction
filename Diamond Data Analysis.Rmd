@@ -151,6 +151,8 @@ postResample(prediction_values_SVM1, test_diamonds$price)
 
 ### Regression Tree
 
+- look into improving regression tree
+
 Info about regression trees: https://www.datadriveninvestor.com/2020/04/13/how-do-regression-trees-work/
 
 ```{r, cache = TRUE}
@@ -204,19 +206,23 @@ postResample(prediction_values_random_forest3, test_diamonds$price)
 
 #### Tuning random forest
 
-method infor for train function: https://topepo.github.io/caret/train-models-by-tag.html 
+method info for train function: https://topepo.github.io/caret/train-models-by-tag.html 
 Random forest info for train function: https://topepo.github.io/caret/train-models-by-tag.html#random-forest 
+
+- could try train function with different split of training and testing data (70/30%) and use ntree = 100
+- look into if can test different ntree amounts using train function
 
 ```{r, cache = TRUE}
 #ntree_rf <- data.frame("ntree" = seq(10, 1000, 10))
-tune_grid_rf <- data.frame("mtry" = c(2:3))
+tune_grid_rf <- data.frame("mtry" = c(1:9))
 ctrl_rf <- trainControl(method = "cv", 10) # use 10-fold cross-validation
 set.seed(12345)
 #random_forests <- train(price ~ ., data = diamonds, method = "rf", tuneGrid = tune_grid_rf, trControl = ctrl_rf, ntree = ntree_rf)
 random_forests <- train(price ~ ., data = diamonds, method = "rf", tuneGrid = tune_grid_rf, trControl = ctrl_rf, ntree = 10)
 random_forests
-```
 
+# Using RMSE, mtry = 9 was chosen (RMSE = 646.2072, Rsquared = 0.9737722, MAE = 311.5486)
+```
 
 QUESTIONS:
 1. Why are there negative prices predicted? 
