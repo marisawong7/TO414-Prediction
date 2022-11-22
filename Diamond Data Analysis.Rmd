@@ -138,7 +138,66 @@ postResample(prediction_values_knn1, test_diamonds$price)
 
 ```{r, cache = TRUE}
 # need to break into dummy variables
-ANN_model1 <- neuralnet(formula = price ~ ., data = train_diamonds)
+library(gmodels)
+library(caret)
+library(neuralnet)
+
+train_ANN <- as.data.frame(model.matrix(~.-1, train_diamonds))
+normalize <- function(x) {
+  return ((x - min(x)) / (max(x) - min(x)))
+}
+train_ANN_nor <- as.data.frame(lapply(train_ANN, normalize))
+test_ANN_nor <- as.data.frame(lapply(test_ANN, normalize))
+
+
+test_ANN <- as.data.frame(model.matrix(~.-1,test_diamonds))
+str(train_ANN)
+str(test_ANN)
+
+# Model 1 (Baseline)
+ANN_model1 <- neuralnet(formula = price ~ ., data = train_ANN_nor)
+plot(ANN_model1)
+prediction_ANN_1 <- predict(ANN_model1, newdata = test_ANN_nor)
+binaryprediction_1 <- ifelse(prediction_ANN_1 > 0.5, 1, 0)
+# Create Confusion Matrix
+CrossTable(x = test_ANN_nor$price, y = binaryprediction_1, propsq = FALSE)
+# Evaluate confusion matrix
+(confusion_matrix_model_ANN1 <- confusionMatrix(as.factor(binaryprediction_1), as.factor(test_ANN_nor$price), positive = "1"))
+# Sensitivity:    ; Pos Pred Value:
+
+
+# # Model 2 (Adding Nodes)
+# ANN_model2 <- neuralnet(formula = price ~ ., data = train_diamonds, hidden = 3)
+# plot(ANN_model2)
+# prediction_ANN_2 <- predict(ANN_model2, newdata = test_diamonds)
+# binaryprediction_2 <- ifelse(prediction_ANN_2 > 0.5, 1, 0)
+# # Create Confusion Matrix
+# CrossTable(x = test_diamonds$price, y = binaryprediction_2, propsq = FALSE)
+# # Evaluate confusion matrix
+# (confusion_matrix_model_ANN2 <- confusionMatrix(as.factor(binaryprediction_2), as.factor(test_diamonds$price), positive = "1"))
+ 
+
+
+# # Model 3 (Adding Layers)
+# ANN_model3 <- neuralnet(formula = price ~ ., data = train_diamonds, hidden = c(2,3), threshold = 0.01, stepmax = 10^5)
+# plot(ANN_model3)
+# prediction_ANN_3 <- predict(ANN_model3, newdata = test_diamonds)
+# binaryprediction_3 <- ifelse(prediction_ANN_3 > 0.5, 1, 0)
+# # Create Confusion Matrix
+# CrossTable(x = test_diamonds$price, y = binaryprediction_3, propsq = FALSE)
+# # Evaluate confusion matrix
+# (confusion_matrix_model_ANN3 <-confusionMatrix(as.factor(binaryprediction_3), as.factor(test_diamonds$price), positive = "1"))
+
+
+# # Model 4 (Adjusting Binary Prediction Definition)
+# ANN_model4 <- neuralnet(formula = price ~ ., data = train_diamonds)
+# plot(ANN_model4)
+# prediction_ANN_4 <- predict(ANN_model4, newdata = test_diamonds)
+# binaryprediction_4 <- ifelse(prediction_ANN_4 > 0.4, 1, 0)
+# # Create Confusion Matrix
+# CrossTable(x = test_diamonds$price, y = binaryprediction_4, propsq = FALSE)
+# # Evaluate confusion matrix
+# (confusion_matrix_model_ANN4 <-confusionMatrix(as.factor(binaryprediction_4), as.factor(test_diamonds$price), positive = "1"))
 ```
 
 ### SVM
