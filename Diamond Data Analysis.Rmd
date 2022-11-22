@@ -97,37 +97,31 @@ model1 <- lm(price ~ ., train_diamonds)
 summary(model1)
 prediction_values_lm1 <- predict(model1, test_diamonds)
 summary(prediction_values_lm1)
-actual_vs_expected_diff_lm1 <- test_diamonds$price - prediction_values_lm1
 summary(actual_vs_expected_diff_lm1)
 postResample(prediction_values_lm1, test_diamonds$price)
 #       RMSE     Rsquared          MAE 
 # 1162.9890409    0.9158249  744.0980344
-# 5.862 mean difference
 
 #Step Model
 model2 <- step(model1, direction = "backward", trace = 0)
 summary(model2)
 prediction_values_lm2 <- predict(model2, test_diamonds)
 summary(prediction_values_lm2)
-actual_vs_expected_diff_lm2 <- test_diamonds$price - prediction_values_lm2
 summary(actual_vs_expected_diff_lm2)
 postResample(prediction_values_lm2, test_diamonds$price)
 #just removes y
 # RMSE     Rsquared          MAE 
 # 1162.7095378    0.9158652  744.0409995 
-# 5.781 mean difference
 
 # Interactions
 model3 <- lm(price ~ clarity + color + cut + log(carat) + depth + table + x + z + x*z + clarity*cut + clarity*color + color*cut + depth*cut + I(x^2), train_diamonds)
 summary(model3)
 prediction_values_lm3 <- predict(model3, test_diamonds)
 summary(prediction_values_lm3)
-actual_vs_expected_diff_lm3 <- test_diamonds$price - prediction_values_lm3
 summary(actual_vs_expected_diff_lm3)
 postResample(prediction_values_lm3, test_diamonds$price)
 #  RMSE     Rsquared          MAE 
 # 1128.9298904    0.9206839  715.1531242 
-# 7.857 mean difference
 
 #Train
 set.seed(300)
@@ -141,11 +135,9 @@ model4
 summary(model4)
 prediction_values_lm4 <- predict(model4, test_diamonds)
 summary(prediction_values_lm4)
-actual_vs_expected_diff_lm4 <- test_diamonds$price - prediction_values_lm4
 summary(actual_vs_expected_diff_lm4)
 # RMSE      Rsquared   MAE     
 #  1117.572  0.9211463  732.9271
-# 5.862 mean difference 
 ```
 
 ### KNN Regression
