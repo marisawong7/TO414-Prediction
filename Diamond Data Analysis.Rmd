@@ -334,6 +334,45 @@ random_forests
 # Using RMSE, mtry = 9 was chosen (RMSE = 646.2072, Rsquared = 0.9737722, MAE = 311.5486)
 ```
 
+### Stacked Model
+```{r}
+# stack_model <- data.frame(prediction models, test_diamonds$price)
+# summary(stack_model)
+# str(stack_model)
+```
+
+## New Test and Train
+```{r}
+stack_test_set <- sample(1:nrow(stack_model), nrow(stack_model) * 0.3) 
+stack_train <- stack_model[-stack_test_set, ]
+stack_test <- stack_model[stack_test_set, ]
+```
+
+## Stack Decision Tree
+```{r}
+library(C50)
+library(gmodels)
+library(caret)
+stack_dt <- C5.0(as.factor(test_diamonds.price) ~ ., data = stack_train) 
+plot(stack_dt)
+stack_dt
+summary(stack_dt)
+stack_predictions_dt <- predict(stack_dt, stack_test)
+postResample(stack_predictions_dt, stack_test$price)
+
+```
+
+## Cost Matrix
+```{r}
+error_cost <- matrix(c(0,1,4,0), nrow=2)
+error_cost
+stack_dt_cost <- C5.0(as.factor(tele_diamonds.price) ~ .,   data = stack_train, costs = error_cost)
+plot(stack_dt_cost)
+stack_cost_predictions <- predict(stack_dt_cost,stack_test)
+postResample(stack_cost_predictions, stack_test$price)
+
+```
+
 QUESTIONS:
 1. Why are there negative prices predicted? 
 
