@@ -8,24 +8,33 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Data is from: https://www.kaggle.com/datasets/colearninglounge/gemstone-price-prediction?select=cubic_zirconia.csv
-
-For the second group project, we have chosen a dataset on cubic zirconia. This dataset has 10 variables (excluding the index variable) which includes the price as well as various characteristics about the cubic zirconia. There are 26967 observations of data in this dataset. Our business question is: how should we price cubic zirconia based on certain characteristics? We will answer this question by creating models to predict the price using a variety of characteristics about cubic zirconia. This addresses the business problem of setting prices for a seller's inventory of cubic zirconia since it is important to set reasonable prices based on what other similar cubic zirconia are selling for.
+### Load Libraries
 
 ```{r}
 library(ggplot2)
 library(caret)
+library(neuralnet)
+library(rpart)
+library(kernlab)
+library(randomForest)
 ```
 
-```{r}
+### Load in Data
+
+```{r, cache = TRUE}
 diamonds <- diamonds
 summary(diamonds)
 str(diamonds)
+nrow(diamonds)
 ```
 
-# Clean Data
+Data is from the ggplot2 library in R.
 
-```{r}
+For the second group project, we have chosen a dataset on diamonds. This dataset has 10 variables which includes the price as well as various characteristics about diamonds. There are 53940 observations of data in this dataset. Our business question is: how should we price diamonds based on certain characteristics? We will answer this question by creating models to predict the price using a variety of characteristics about diamonds. This addresses the business problem of setting prices for a seller's inventory of diamonds since it is important to set reasonable prices based on what other similar diamonds are selling for.
+
+### Clean Data
+
+```{r, cache = TRUE}
 # Make certain variables to be a factor 
 # cut, color, clarity 
 diamonds$cut <- factor(diamonds$cut, ordered = FALSE)
@@ -36,20 +45,20 @@ str(diamonds)
 summary(diamonds)
 ```
 
-Before moving to the analysis of the data set, we cleaned the data to prepare it for regression. The variable of X is an index variable, which is not necessary for our analysis. Cut, color, and clarity all have a clear number of levels, so we converted those variables into factors. We changed NA values for depth to be the mean depth. We used the mean depth since the mean and median values of depth are close in value.
+Before moving to the analysis of the data set, we cleaned the data to prepare it for regression. Cut, color, and clarity were ordinal factors. For creating our models, we decided to change cut, color, and clarity to be factors which are not ordered.
 
-# Regression
+### Regression
 
-```{r}
+```{r, cache + TRUE}
 diamonds_model <- lm(price ~ ., data = diamonds)
 summary(diamonds_model)
 ```
 
-We ran a linear regression model on the cleaned data with the response variable price and included all predictor variables. From doing this, we see that only variables y and z are not statistically significant at an alpha level of 0.05. All other predictor variables are statistically significant at an alpha level of 0.05 (and all of those are even statistically significant at an alpha level of 0.001). Because of having many statistically significant predictor variables at an alpha level of 0.05, we decided to go ahead and choose this dataset to use in this project to predict the price of cubic zirconia.
+We ran a linear regression model on the cleaned data with the response variable price and included all predictor variables. From doing this, we see that only variables y and z are not statistically significant at an alpha level of 0.05. All other predictor variables are statistically significant at an alpha level of 0.05 (and all of those are even statistically significant at an alpha level of 0.001). Because of having many statistically significant predictor variables at an alpha level of 0.05, we decided to go ahead and choose this dataset to use in this project to predict the price of diamonds.
 
-# Split Data into Training and Testing Data
+### Split Data into Training and Testing Data
 
-```{r}
+```{r, cache = TRUE}
 # Get value of 70% of the data
 num_training_data <- round(0.7 * nrow(diamonds))
 
@@ -69,9 +78,9 @@ summary(train_diamonds)
 summary(test_diamonds)
 ```
 
-# Do Linear Regression on Training Set, Predict Price for Testing Set
+### Do Linear Regression on Training Set, Predict Price for Testing Set
 
-```{r}
+```{r, cache = TRUE}
 # Main effects model
 model1 <- lm(price ~ ., train_diamonds)
 summary(model1)
@@ -85,46 +94,134 @@ summary(actual_vs_expected_diff_lm1)
 postResample(prediction_values_lm1, test_diamonds$price)
 ```
 
-# KNN Regression
+### KNN Regression
 
-```{r}
+```{r, cache = TRUE}
 knnreg_model1 <- knnreg(price ~ ., data = train_diamonds, k = 5)
 summary(knnreg_model1)
 prediction_values_knn1 <- predict(knnreg_model1, test_diamonds)
+summary(prediction_values_knn1)
+actual_vs_expected_diff_knn1 <- test_diamonds$price - prediction_values_knn1
+summary(actual_vs_expected_diff_knn1)
 
+postResample(prediction_values_knn1, test_diamonds$price)
+#        RMSE     Rsquared          MAE 
+#1037.3289972    0.9343628  540.2361728 
+
+# # Improving model through changing k
+# knnreg_model2 <- knnreg(price ~ ., data = train_diamonds, k = 10)
+# prediction_values_knn2 <- predict(knnreg_model2, test_diamonds)
+# actual_vs_expected_diff_knn2 <- test_diamonds$price - prediction_values_knn2
+# 
+# postResample(prediction_values_knn2, test_diamonds$price)
+# #        RMSE     Rsquared          MAE 
+# #1056.7784212    0.9343528  553.3987039 
+# 
+# knnreg_model3 <- knnreg(price ~ ., data = train_diamonds, k = 7)
+# prediction_values_knn3 <- predict(knnreg_model3, test_diamonds)
+# actual_vs_expected_diff_knn3 <- test_diamonds$price - prediction_values_knn3
+# 
+# postResample(prediction_values_knn3, test_diamonds$price)
+# #        RMSE     Rsquared          MAE 
+# #1039.6573549    0.9349978  542.4383039 
+# 
+# knnreg_model4 <- knnreg(price ~ ., data = train_diamonds, k = 20)
+# prediction_values_knn4 <- predict(knnreg_model4, test_diamonds)
+# actual_vs_expected_diff_knn4 <- test_diamonds$price - prediction_values_knn4
+# 
+# postResample(prediction_values_knn4, test_diamonds$price)
+# #        RMSE     Rsquared          MAE 
+# #1100.2318281    0.9311135  580.5150942 
 ```
 
 # ANN 
 
-```{r}
-library(neuralnet)
+```{r, cache = TRUE}
 # need to break into dummy variables
 ANN_model1 <- neuralnet(formula = price ~ ., data = train_diamonds)
 ```
 
-# Regression Tree
+### SVM
 
-```{r}
-library(rpart)
-reg_tree_1 <- rpart(formula = price ~ ., data = train_diamonds)
-prediction_values_reg_tree1 <- predict(reg_tree_1, test_diamonds)
-postResample(prediction_values_reg_tree1, test_diamonds$price)
-```
-
-# SVM
-
-```{r}
-library(kernlab)
+```{r, cache = TRUE}
 SVM_model1 <- ksvm(price ~ ., data = train_diamonds, kernel = "vanilladot")
 prediction_values_SVM1 <- predict(SVM_model1, test_diamonds)
 postResample(prediction_values_SVM1, test_diamonds$price)
 ```
 
-# Random Forest
+### Regression Tree
 
-```{r}
-library(randomForest)
-random_forest_model1 <- randomForest(price ~ ., data = train_diamonds)
+- look into improving regression tree
+
+Info about regression trees: https://www.datadriveninvestor.com/2020/04/13/how-do-regression-trees-work/
+
+```{r, cache = TRUE}
+# One regression tree made with training data to predict price of testing data
+reg_tree_1 <- rpart(formula = price ~ ., data = train_diamonds)
+prediction_values_reg_tree1 <- predict(reg_tree_1, test_diamonds)
+summary(prediction_values_reg_tree1) # only positive prices predicted
+postResample(prediction_values_reg_tree1, test_diamonds$price)
+# RMSE = 1423.7770949
+# Rsquared = 0.8738465
+# MAE = 909.6853036
+```
+
+### Random Forest
+
+#### One random forest made with training data to predict price of testing data using 10 trees
+
+```{r, cache = TRUE}
+random_forest_model1 <- randomForest(price ~ ., data = train_diamonds, ntree = 10)
+prediction_values_random_forest1 <- predict(random_forest_model1, test_diamonds)
+summary(prediction_values_random_forest1) # only positive prices predicted
+postResample(prediction_values_random_forest1, test_diamonds$price)
+# RMSE = 625.1970581
+# Rsquared = 0.9758139
+# MAE = 307.6215889
+```
+
+#### One random forest made with training data to predict price of testing data using 100 trees
+
+```{r, cache = TRUE}
+random_forest_model2 <- randomForest(price ~ ., data = train_diamonds, ntree = 100)
+prediction_values_random_forest2 <- predict(random_forest_model2, test_diamonds)
+summary(prediction_values_random_forest2) # only positive prices predicted
+postResample(prediction_values_random_forest2, test_diamonds$price)
+# RMSE = 588.6442348
+# Rsquared = 0.9785971
+# MAE = 288.6016663
+```
+
+#### One random forest made with training data to predict price of testing data using 500 trees
+
+```{r, cache = TRUE}
+random_forest_model3 <- randomForest(price ~ ., data = train_diamonds)
+prediction_values_random_forest3 <- predict(random_forest_model1, test_diamonds)
+summary(prediction_values_random_forest3) # only positive prices predicted
+postResample(prediction_values_random_forest3, test_diamonds$price)
+# RMSE = 625.1970581
+# Rsquared = 0.9758139
+# MAE = 307.6215889
+```
+
+#### Tuning random forest
+
+method info for train function: https://topepo.github.io/caret/train-models-by-tag.html 
+Random forest info for train function: https://topepo.github.io/caret/train-models-by-tag.html#random-forest 
+
+- could try train function with different split of training and testing data (70/30%) and use ntree = 100
+- look into if can test different ntree amounts using train function
+
+```{r, cache = TRUE}
+#ntree_rf <- data.frame("ntree" = seq(10, 1000, 10))
+tune_grid_rf <- data.frame("mtry" = c(1:9))
+ctrl_rf <- trainControl(method = "cv", 10) # use 10-fold cross-validation
+set.seed(12345)
+#random_forests <- train(price ~ ., data = diamonds, method = "rf", tuneGrid = tune_grid_rf, trControl = ctrl_rf, ntree = ntree_rf)
+random_forests <- train(price ~ ., data = diamonds, method = "rf", tuneGrid = tune_grid_rf, trControl = ctrl_rf, ntree = 10)
+random_forests
+
+# Using RMSE, mtry = 9 was chosen (RMSE = 646.2072, Rsquared = 0.9737722, MAE = 311.5486)
 ```
 
 QUESTIONS:
