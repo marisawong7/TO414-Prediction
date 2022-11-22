@@ -1,0 +1,134 @@
+---
+title: "Linear Models"
+author: "Ally Weingarden"
+date: "2022-11-22"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(ggplot2)
+library(caret)
+```
+
+```{r}
+diamonds <- diamonds
+summary(diamonds)
+str(diamonds)
+```
+
+# Clean Data
+
+```{r}
+diamonds$cut <- factor(diamonds$cut, ordered = FALSE)
+diamonds$color <- factor(diamonds$color, ordered = FALSE)
+diamonds$clarity <- factor(diamonds$clarity, ordered = FALSE)
+
+str(diamonds)
+summary(diamonds)
+```
+
+
+# Regression
+
+```{r}
+diamonds_model <- lm(price ~ ., data = diamonds)
+summary(diamonds_model)
+```
+
+
+# Split Data into Training and Testing Data
+
+```{r}
+# Get value of 70% of the data
+num_training_data <- round(0.7 * nrow(diamonds))
+
+# Get random sample of indexes for the training data
+set.seed(123) # Set a seed
+train_index <- sample(x = c(1:nrow(diamonds)), size = num_training_data, replace = FALSE)
+
+# Get training data based on the train_index values randomly selected
+train_diamonds <- diamonds[train_index,]
+# Get testing data
+test_diamonds <- diamonds[-train_index,]
+# Check: make sure the number of values in training set and testing set 
+# add to the number of rows in the original dataset
+nrow(diamonds) == nrow(train_diamonds) + nrow(test_diamonds)
+# Get summary of training and test data, make sure similar distribution of price values
+summary(train_diamonds)
+summary(test_diamonds)
+```
+
+
+```{r}
+plot( ~ price + carat + depth + table + x + y + z, data = train_diamonds)
+
+hist(train_diamonds$price)
+hist(train_diamonds$carat)
+hist(train_diamonds$depth)
+hist(train_diamonds$table)
+hist(train_diamonds$x)
+hist(train_diamonds$y)
+hist(train_diamonds$z)
+
+
+# Main effects model
+model1 <- lm(price ~ ., train_diamonds)
+summary(model1)
+prediction_values_lm1 <- predict(model1, test_diamonds)
+summary(prediction_values_lm1)
+actual_vs_expected_diff_lm1 <- test_diamonds$price - prediction_values_lm1
+summary(actual_vs_expected_diff_lm1)
+postResample(prediction_values_lm1, test_diamonds$price)
+#       RMSE     Rsquared          MAE 
+# 1162.9890409    0.9158249  744.0980344
+# 5.862 mean difference
+
+#Step Model
+model2 <- step(model1, direction = "backward", trace = 0)
+summary(model2)
+prediction_values_lm2 <- predict(model2, test_diamonds)
+summary(prediction_values_lm2)
+actual_vs_expected_diff_lm2 <- test_diamonds$price - prediction_values_lm2
+summary(actual_vs_expected_diff_lm2)
+postResample(prediction_values_lm2, test_diamonds$price)
+#just removes y
+# RMSE     Rsquared          MAE 
+# 1162.7095378    0.9158652  744.0409995 
+# 5.781 mean difference
+
+# Interactions
+model3 <- lm(price ~ clarity + color + cut + log(carat) + depth + table + x + z + x*z + clarity*cut + clarity*color + color*cut + depth*cut + I(x^2), train_diamonds)
+summary(model3)
+prediction_values_lm3 <- predict(model3, test_diamonds)
+summary(prediction_values_lm3)
+actual_vs_expected_diff_lm3 <- test_diamonds$price - prediction_values_lm3
+summary(actual_vs_expected_diff_lm3)
+postResample(prediction_values_lm3, test_diamonds$price)
+#  RMSE     Rsquared          MAE 
+# 1128.9298904    0.9206839  715.1531242 
+# 7.857 mean difference
+
+#Train
+set.seed(300)
+ctrl <- trainControl(method = "cv", number = 10,
+                     selectionFunction = "oneSE")
+grid <- expand.grid(.model = "tree",
+                    .trials = c(1, 5, 10, 15, 20, 25, 30, 35),
+                    .winnow = "FALSE")
+model4 <- train(price ~ ., data = train_diamonds, method = "lm", trControl = ctrl)
+model4
+summary(model4)
+prediction_values_lm4 <- predict(model4, test_diamonds)
+summary(prediction_values_lm4)
+actual_vs_expected_diff_lm4 <- test_diamonds$price - prediction_values_lm4
+summary(actual_vs_expected_diff_lm4)
+# RMSE      Rsquared   MAE     
+#  1117.572  0.9211463  732.9271
+# 5.862 mean difference
+```
+
