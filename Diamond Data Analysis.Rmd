@@ -144,7 +144,12 @@ ANN_model1 <- neuralnet(formula = price ~ ., data = train_diamonds)
 ### SVM
 
 ```{r, cache = TRUE}
-SVM_model1 <- ksvm(price ~ ., data = train_diamonds, kernel = "vanilladot")
+#SVM_model1 <- ksvm(price ~ ., data = train_diamonds, kernel = "vanilladot")
+ctrl_svm <- trainControl(method = "cv", 10)
+#tune_grid_svm <- data.frame("mtry" = c(1:9))
+SVM_model1 <- train(price ~ ., data = train_diamonds, method = "svmLinear",
+                 trControl = ctrl_svm
+                 )
 prediction_values_SVM1 <- predict(SVM_model1, test_diamonds)
 postResample(prediction_values_SVM1, test_diamonds$price)
 ```
