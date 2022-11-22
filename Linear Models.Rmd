@@ -129,6 +129,6 @@ actual_vs_expected_diff_lm4 <- test_diamonds$price - prediction_values_lm4
 summary(actual_vs_expected_diff_lm4)
 # RMSE      Rsquared   MAE     
 #  1117.572  0.9211463  732.9271
-# 5.862 mean difference
+# 5.862 mean difference 
 ```
 
