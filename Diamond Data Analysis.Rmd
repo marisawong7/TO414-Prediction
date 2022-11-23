@@ -200,23 +200,23 @@ train_ANN_norm$price <- train_ANN$price
 test_ANN_norm <- as.data.frame(lapply(test_ANN[,-22], normalize))
 test_ANN_norm$price <- test_ANN$price
 
-# Model 1 (Baseline)
-ANN_model1 <- neuralnet(formula = price ~ ., data = train_ANN_norm)
-plot(ANN_model1)
-prediction_values_ANN1 <- predict(ANN_model1, test_ANN_norm)
-actual_vs_expected_diff_ANN1 <- test_ANN_norm$price - prediction_values_ANN1
-postResample(prediction_values_ANN1, test_ANN_norm$price)
-# RMSE     Rsquared          MAE 
-# 4.008756e+03 1.095003e-06 3.039719e+03
+# # Model 1 (Baseline)
+# ANN_model1 <- neuralnet(formula = price ~ ., data = train_ANN_norm)
+# plot(ANN_model1)
+# prediction_values_ANN1 <- predict(ANN_model1, test_ANN_norm)
+# actual_vs_expected_diff_ANN1 <- test_ANN_norm$price - prediction_values_ANN1
+# postResample(prediction_values_ANN1, test_ANN_norm$price)
+# # RMSE     Rsquared          MAE 
+# # 4.008756e+03 1.095003e-06 3.039719e+03
 
-# # Model 2 (Adding Nodes)
-# ANN_model2 <- neuralnet(formula = price ~ ., data = train_ANN_norm, hidden = 3)
-# plot(ANN_model2)
-# prediction_values_ANN2 <- predict(ANN_model2, test_ANN_norm)
-# actual_vs_expected_diff_ANN2 <- test_ANN_norm$price - prediction_values_ANN2
-# postResample(prediction_values_ANN2, test_ANN_norm$price)
-# # RMSE      Rsquared   MAE
-
+# Model 2 (Adding Nodes)
+ANN_model2 <- neuralnet(formula = price ~ ., data = train_ANN_norm, hidden = 3)
+plot(ANN_model2)
+prediction_values_ANN2 <- predict(ANN_model2, test_ANN_norm)
+actual_vs_expected_diff_ANN2 <- test_ANN_norm$price - prediction_values_ANN2
+postResample(prediction_values_ANN2, test_ANN_norm$price)
+#         RMSE     Rsquared          MAE
+# 4.008756e+03 2.494753e-06 3.039719e+03
 
 # # Model 3 (Adding Layers)
 # ANN_model3 <- neuralnet(formula = price ~ ., data = train_ANN_norm, hidden = c(2,3), threshold = 0.01, stepmax = 10^5)
@@ -228,19 +228,6 @@ postResample(prediction_values_ANN1, test_ANN_norm$price)
 # # 4008.756       NA 3039.719 
 
 
-#  # Model 4 (Using train function)
-# set.seed(300)
-# ctrl <- trainControl(method = "cv", number = 10)
-# grid <- expand.grid(.model = "tree",
-#                     .trials = c(1, 5, 10, 15, 20, 25, 30, 35),
-#                     .winnow = "FALSE")
-# ANN_model4 <- train(price ~ ., data = train_ANN_norm, method = "nnet", trControl = ctrl, tuneGrid = grid)
-# ANN_model4
-# summary(ANN_model4)
-# prediction_values_ANN4 <- predict(ANN_model4, test_ANN_norm)
-# summary(prediction_values_ANN4)
-# postResample(prediction_values_ANN4, test_ANN_norm$price)
-# # RMSE      Rsquared   MAE
 
 ```
 
@@ -387,7 +374,7 @@ A random forest with 100 trees was chosen.
 ```{r}
 # note: need to double check ANN 
 # note: may need to update KNN
-stack_model <- data.frame(prediction_values_lm3, prediction_values_knn1, prediction_values_ANN1, prediction_values_SVM2, prediction_values_reg_tree1, prediction_values_random_forest2, test_diamonds$price)
+stack_model <- data.frame(prediction_values_lm3, prediction_values_knn1, prediction_values_ANN2, prediction_values_SVM2, prediction_values_reg_tree1, prediction_values_random_forest2, test_diamonds$price)
 summary(stack_model)
 str(stack_model)
 ```
@@ -425,9 +412,10 @@ SVM:
 - MAE = 353.32796
 
 ANN:
-- RMSE =
-- Rsquared = 
-- MAE = 
+- RMSE = 4.008756e+03
+- Rsquared = 2.494753e-06
+- MAE = 3.039719e+03
+
 
 Regression Tree:
 - RMSE = 1449.4476204
