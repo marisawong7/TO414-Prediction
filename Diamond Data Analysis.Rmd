@@ -82,6 +82,7 @@ summary(test_diamonds)
 
 ```{r, cache = TRUE}
 plot( ~ price + carat + depth + table + x + y + z, data = train_diamonds)
+#quadratic relationship between x and price
 
 hist(train_diamonds$price)
 hist(train_diamonds$carat)
@@ -90,6 +91,7 @@ hist(train_diamonds$table)
 hist(train_diamonds$x)
 hist(train_diamonds$y)
 hist(train_diamonds$z)
+# carat has a heavy right skew
 
 
 # Main effects model
@@ -114,30 +116,14 @@ postResample(prediction_values_lm2, test_diamonds$price)
 # 1162.7095378    0.9158652  744.0409995 
 
 # Interactions
-model3 <- lm(price ~ clarity + color + cut + log(carat) + depth + table + x + z + x*z + clarity*cut + clarity*color + color*cut + depth*cut + I(x^2), train_diamonds)
+model3 <- lm(price ~ clarity + color + cut + log(carat) + depth + table + x + z + clarity*cut + clarity*color + color*cut + carat*color + depth*cut + depth*color + x*depth + z*depth + I(x^2), train_diamonds)
 summary(model3)
 prediction_values_lm3 <- predict(model3, test_diamonds)
 summary(prediction_values_lm3)
-summary(actual_vs_expected_diff_lm3)
 postResample(prediction_values_lm3, test_diamonds$price)
 #  RMSE     Rsquared          MAE 
-# 1128.9298904    0.9206839  715.1531242 
+# 1033.2668851    0.9335579  628.8434045 
 
-#Train
-set.seed(300)
-ctrl <- trainControl(method = "cv", number = 10,
-                     selectionFunction = "oneSE")
-grid <- expand.grid(.model = "tree",
-                    .trials = c(1, 5, 10, 15, 20, 25, 30, 35),
-                    .winnow = "FALSE")
-model4 <- train(price ~ ., data = train_diamonds, method = "lm", trControl = ctrl)
-model4
-summary(model4)
-prediction_values_lm4 <- predict(model4, test_diamonds)
-summary(prediction_values_lm4)
-summary(actual_vs_expected_diff_lm4)
-# RMSE      Rsquared   MAE     
-#  1117.572  0.9211463  732.9271
 ```
 
 ### KNN Regression
