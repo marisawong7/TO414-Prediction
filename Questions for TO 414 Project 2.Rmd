@@ -1,0 +1,52 @@
+---
+title: "Questions for TO 414 Project 2"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+QUESTIONS:
+1. Why are there negative prices predicted? 
+
+ways to censor the data, don't worry about this right now (for questions 1 and 2)
+
+2. Is there a way to ensure that the price is positive?
+
+3. How to test goodness of estimation?
+
+caret package: use RMSE (lower is better), MAE (lower is better), R^2 (larger is better) postResample in Caret (will calculate all three metrics)
+
+Resources:
+RMSE: https://www.statisticshowto.com/probability-and-statistics/regression-analysis/rmse-root-mean-square-error/
+MAE: https://www.statisticshowto.com/absolute-error/ 
+R^2: https://www.investopedia.com/terms/r/r-squared.asp 
+
+4. Not sure how accurate the data is since couldn't find info about using the letter color scale and clarity coding that the dataset uses for cubic zirconia (seems like they are using diamond coding). Should we instead use the diamond dataset the professor had mentioned?
+
+switch over to diamonds data from ggplot2, don't need to redo the first deliverable
+
+5. When are the other deliverables due?
+
+- second deliverable due sometime before Thanksgiving
+
+Model specifications:
+
+- Linear models (can include interactions and non-linear terms) <- Ally
+- KNN reg package, use KNNreg function in caret <- Ziying
+- neural network (use as normal) <- Leah
+- decision tree (regression trees), package CART or PARTYCIT RPART  <- Juliet
+- SVM (support vector machines) (try to use as normal) <- Marisa
+- random forest for continuous data, RPART or CART <- Juliet
+
+Regression tree resource: https://www.geeksforgeeks.org/decision-tree-for-regression-in-r-programming/
+
+Aside: Resources on Cubic Zirconia:
+https://www.firemountaingems.com/resources/encyclobeadia/gem-notes/hb1f
+
+https://www.thespruce.com/cubic-zirconia-information-2043824 
+
+https://www.jewelry-secrets.com/Blog/cubic-zirconia-grading/ 
+
+Info about diamonds: https://www.forevermark.com/en-us/now-forever/guides/diamond-engagement-guide/diamond-color-and-clarity/
