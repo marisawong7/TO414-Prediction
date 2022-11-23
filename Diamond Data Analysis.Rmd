@@ -49,7 +49,7 @@ Before moving to the analysis of the data set, we cleaned the data to prepare it
 
 ### Regression
 
-```{r, cache + TRUE}
+```{r, cache = TRUE}
 diamonds_model <- lm(price ~ ., data = diamonds)
 summary(diamonds_model)
 ```
