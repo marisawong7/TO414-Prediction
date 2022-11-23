@@ -41,11 +41,25 @@ diamonds$cut <- factor(diamonds$cut, ordered = FALSE)
 diamonds$color <- factor(diamonds$color, ordered = FALSE)
 diamonds$clarity <- factor(diamonds$clarity, ordered = FALSE)
 
+# Convert qualitative variables to dummy variables
+diamonds_new <- as.data.frame(model.matrix(~.-1, diamonds))
+
+normalize <- function(x) {
+  return ((x - min(x)) / (max(x) - min(x)))
+}
+
+# Normalize data except for price
+diamonds_norm <- as.data.frame(lapply(diamonds_new[,-22], normalize))
+diamonds_norm$price <- diamonds_new$price
+
+# Set diamonds data to diamonds_norm
+diamonds <- diamonds_norm
+
 str(diamonds)
 summary(diamonds)
 ```
 
-Before moving to the analysis of the data set, we cleaned the data to prepare it for regression. Cut, color, and clarity were ordinal factors. For creating our models, we decided to change cut, color, and clarity to be factors which are not ordered.
+Before moving to the analysis of the data set, we cleaned the data to prepare it for regression. Cut, color, and clarity were ordinal factors. We decided to change cut, color, and clarity to be factors which are not ordered and then convert them to dummy variables with a value of 0 if a diamond does not have that characteristic or a value of 1 if a diamond does have that characteristic. All variables except for price were normalized.
 
 ### Regression
 
@@ -54,7 +68,7 @@ diamonds_model <- lm(price ~ ., data = diamonds)
 summary(diamonds_model)
 ```
 
-We ran a linear regression model on the cleaned data with the response variable price and included all predictor variables. From doing this, we see that only variables y and z are not statistically significant at an alpha level of 0.05. All other predictor variables are statistically significant at an alpha level of 0.05 (and all of those are even statistically significant at an alpha level of 0.001). Because of having many statistically significant predictor variables at an alpha level of 0.05, we decided to go ahead and choose this dataset to use in this project to predict the price of diamonds.
+We ran a linear regression model on the cleaned data with the response variable price and included all predictor variables. From doing this, we see that only variables y and z are not statistically significant at an alpha level of 0.05. The dummy variable cutIdeal has an NA value for its coefficient. All other predictor variables are statistically significant at an alpha level of 0.05 (and all of those are even statistically significant at an alpha level of 0.001). Because of having many statistically significant predictor variables at an alpha level of 0.05, we decided to go ahead and choose this dataset to use in this project to predict the price of diamonds.
 
 ### Split Data into Training and Testing Data
 
@@ -77,6 +91,8 @@ nrow(diamonds) == nrow(train_diamonds) + nrow(test_diamonds)
 summary(train_diamonds)
 summary(test_diamonds)
 ```
+
+70% of the data was randomly selected to be training data, and the remaining 30% of the data is testing data.
 
 ### Linear Regression 
 
@@ -268,20 +284,65 @@ postResample(prediction_values_SVM2, test_diamonds$price)
 
 ### Regression Tree
 
-- look into improving regression tree
+Note: RMSE, Rsquared, and MAE values commented in code may be different than output
 
 Info about regression trees: https://www.datadriveninvestor.com/2020/04/13/how-do-regression-trees-work/
 
 ```{r, cache = TRUE}
+# Chosen regression tree:
 # One regression tree made with training data to predict price of testing data
 reg_tree_1 <- rpart(formula = price ~ ., data = train_diamonds)
 prediction_values_reg_tree1 <- predict(reg_tree_1, test_diamonds)
 summary(prediction_values_reg_tree1) # only positive prices predicted
 postResample(prediction_values_reg_tree1, test_diamonds$price)
-# RMSE = 1423.7770949
-# Rsquared = 0.8738465
-# MAE = 909.6853036
+# RMSE = 1449.4476204
+# Rsquared = 0.8692558
+# MAE = 905.9587458
 ```
+
+```{r, cache = TRUE}
+# Second regression tree
+
+# Gets same RMSE, Rsquared, and MAE as reg_tree_1 
+# and only positive prices predicted:
+#control_value = data.frame("minbucket" = 1000)
+
+# Gets same RMSE, Rsquared, and MAE as reg_tree_1
+# and only positive prices predicted:
+#control_value = data.frame("xval" = 100)
+
+# RMSE = 2509.0156262, Rsquared = 0.6082208, and MAE = 1733.6869289
+# and only positive prices predicted:
+#control_value = data.frame("maxdepth" = 1)
+
+# RMSE = 1686.5011751, Rsquared = 0.8230183, and MAE = 1061.1619385
+# and only positive prices predicted:
+#control_value = data.frame("maxdepth" = 2)
+
+# Choose this maxdepth to use for second regression tree:
+# RMSE = 1505.3413035, Rsquared = 0.8589778, and MAE = 949.7464466
+# and only positive prices predicted:
+control_value = data.frame("maxdepth" = 3)
+
+# RMSE = 1505.3413035, Rsquared = 0.8589778, and MAE = 949.7464466
+# and only positive prices predicted:
+#control_values = data.frame("maxdepth" = 4)
+
+# RMSE = 1505.3413035, Rsquared = 0.8589778, and MAE = 949.7464466
+# and only positive prices predicted:
+#control_values = data.frame("maxdepth" = 5)
+
+# RMSE = 1505.3413035, Rsquared = 0.8589778, and MAE = 949.7464466
+# and only positive prices predicted:
+#control_values = data.frame("maxdepth" = 10)
+
+reg_tree_2 <- rpart(formula = price ~ ., data = train_diamonds, control = control_value)
+prediction_values_reg_tree2 <- predict(reg_tree_2, test_diamonds)
+summary(prediction_values_reg_tree2)
+postResample(prediction_values_reg_tree2, test_diamonds$price)
+```
+
+The chosen regression tree is the one with default values for control from the rpart function and predicts price using all the predictor variables.
 
 ### Random Forest
 
@@ -326,20 +387,27 @@ postResample(prediction_values_random_forest3, test_diamonds$price)
 method info for train function: https://topepo.github.io/caret/train-models-by-tag.html 
 Random forest info for train function: https://topepo.github.io/caret/train-models-by-tag.html#random-forest 
 
-- could try train function with different split of training and testing data (70/30%) and use ntree = 100
-- look into if can test different ntree amounts using train function
-
 ```{r, cache = TRUE}
-#ntree_rf <- data.frame("ntree" = seq(10, 1000, 10))
-tune_grid_rf <- data.frame("mtry" = c(1:9))
+tune_grid_rf <- data.frame("mtry" = c(1:24)) # Test out number of predictor variables chosen
 ctrl_rf <- trainControl(method = "cv", 10) # use 10-fold cross-validation
 set.seed(12345)
-#random_forests <- train(price ~ ., data = diamonds, method = "rf", tuneGrid = tune_grid_rf, trControl = ctrl_rf, ntree = ntree_rf)
 random_forests <- train(price ~ ., data = diamonds, method = "rf", tuneGrid = tune_grid_rf, trControl = ctrl_rf, ntree = 10)
 random_forests
 
 # Using RMSE, mtry = 9 was chosen (RMSE = 646.2072, Rsquared = 0.9737722, MAE = 311.5486)
 ```
+
+```{r}
+ntree_values <- c(10, 100, 500, 1000)
+for(i in ntree_values){
+  random_forest_model <- randomForest(price ~ ., data = train_diamonds, ntree = 100)
+  prediction_values_random_forest <- predict(random_forest_model, test_diamonds)
+  evaluation_values <- postResample(prediction_values_random_forest, test_diamonds$price)
+  return(values, prediction_values_random_forest)
+}
+```
+
+A random forest with 100 trees was chosen.
 
 ### Stacked Model
 ```{r}
