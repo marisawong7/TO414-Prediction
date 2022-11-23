@@ -389,8 +389,8 @@ A random forest with 100 trees was chosen.
 # note: need to double check ANN 
 # note: may need to update KNN
 stack_model <- data.frame(prediction_values_lm3, prediction_values_knn1, prediction_values_ANN1, prediction_values_SVM2, prediction_values_reg_tree1, prediction_values_random_forest2, test_diamonds$price)
-# summary(stack_model)
-# str(stack_model)
+summary(stack_model)
+str(stack_model)
 ```
 
 ## New Test and Train
