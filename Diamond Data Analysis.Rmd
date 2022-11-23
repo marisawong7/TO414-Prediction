@@ -163,7 +163,6 @@ postResample(prediction_values_knn1, test_diamonds$price)
 # #1100.2318281    0.9311135  580.5150942 
 
 # Train the model to find kval
-library(caret)
 set.seed(300)
 grid <- expand.grid(k = c(1, 5, 9, 10, 15, 20, 25, 30, 35))
 ctrl <- trainControl(method = "cv", 
@@ -308,7 +307,7 @@ postResample(prediction_values_reg_tree1, test_diamonds$price)
 # Choose this maxdepth to use for second regression tree:
 # RMSE = 1423.7770949, Rsquared = 0.8738465, and MAE = 909.6853036
 # and only positive prices predicted:
-#control_value = data.frame("maxdepth" = 3)
+control_value = data.frame("maxdepth" = 3)
 
 # RMSE = 1686.5011751, Rsquared = 0.8230183, and MAE = 1061.1619385
 # and only positive prices predicted:
@@ -400,71 +399,47 @@ stack_train <- stack_model[-stack_test_set, ]
 stack_test <- stack_model[stack_test_set, ]
 ```
 
-## Stack Decision Tree
+## Stack Regression Tree
 ```{r}
-library(C50)
-library(gmodels)
-library(caret)
-stack_dt <- C5.0(as.factor(test_diamonds.price) ~ ., data = stack_train) 
-plot(stack_dt)
-stack_dt
-summary(stack_dt)
-stack_predictions_dt <- predict(stack_dt, stack_test)
-postResample(stack_predictions_dt, stack_test$price)
-
+stack_rt <- rpart(formula = test_diamonds.price ~ ., data = stack_train)
+stack_rt
+summary(stack_rt)
+stack_predictions_rt <- predict(stack_rt, stack_test)
+postResample(stack_predictions_rt, stack_test$test_diamonds.price)
+# RMSE = 899.9276686, Rsquared = 0.9487222, MAE = 566.5059942 
 ```
 
-## Cost Matrix
-```{r}
-error_cost <- matrix(c(0,1,4,0), nrow=2)
-error_cost
-stack_dt_cost <- C5.0(as.factor(tele_diamonds.price) ~ .,   data = stack_train, costs = error_cost)
-plot(stack_dt_cost)
-stack_cost_predictions <- predict(stack_dt_cost,stack_test)
-postResample(stack_cost_predictions, stack_test$price)
+Linear regression:
+- RMSE = 1033.2668851
+- Rsquared = 0.9335579
+- MAE = 628.8434045 
 
-```
+KNN regression:
+- RMSE =
+- Rsquared = 
+- MAE = 
 
-QUESTIONS:
-1. Why are there negative prices predicted? 
+SVM:
+- RMSE = 689.49626
+- Rsquared = 0.97049
+- MAE = 353.32796
 
-ways to censor the data, don't worry about this right now (for questions 1 and 2)
+ANN:
+- RMSE =
+- Rsquared = 
+- MAE = 
 
-2. Is there a way to ensure that the price is positive?
+Regression Tree:
+- RMSE = 1449.4476204
+- Rsquared = 0.8692558
+- MAE = 905.9587458
 
-3. How to test goodness of estimation?
+Random Forest:
+- RMSE = 588.6442348
+- Rsquared = 0.9785971
+- MAE = 288.6016663
 
-caret package: use RMSE (lower is better), MAE (lower is better), R^2 (larger is better) postResample in Caret (will calculate all three metrics)
-
-Resources:
-RMSE: https://www.statisticshowto.com/probability-and-statistics/regression-analysis/rmse-root-mean-square-error/
-MAE: https://www.statisticshowto.com/absolute-error/ 
-R^2: https://www.investopedia.com/terms/r/r-squared.asp 
-
-4. Not sure how accurate the data is since couldn't find info about using the letter color scale and clarity coding that the dataset uses for cubic zirconia (seems like they are using diamond coding). Should we instead use the diamond dataset the professor had mentioned?
-
-switch over to diamonds data from ggplot2, don't need to redo the first deliverable
-
-5. When are the other deliverables due?
-
-- second deliverable due sometime before Thanksgiving
-
-Model specifications:
-
-- Linear models (can include interactions and non-linear terms) <- Ally
-- KNN reg package, use KNNreg function in caret <- Ziying
-- neural network (use as normal) <- Leah
-- decision tree (regression trees), package CART or PARTYCIT RPART  <- Juliet
-- SVM (support vector machines) (try to use as normal) <- Marisa
-- random forest for continuous data, RPART or CART <- Juliet
-
-Regression tree resource: https://www.geeksforgeeks.org/decision-tree-for-regression-in-r-programming/
-
-Aside: Resources on Cubic Zirconia:
-https://www.firemountaingems.com/resources/encyclobeadia/gem-notes/hb1f
-
-https://www.thespruce.com/cubic-zirconia-information-2043824 
-
-https://www.jewelry-secrets.com/Blog/cubic-zirconia-grading/ 
-
-Info about diamonds: https://www.forevermark.com/en-us/now-forever/guides/diamond-engagement-guide/diamond-color-and-clarity/
+Stacked Regression Tree:
+- RMSE = 899.9276686
+- Rsquared = 0.9487222
+- MAE = 566.5059942 
