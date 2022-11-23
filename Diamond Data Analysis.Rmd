@@ -8,6 +8,8 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+Intermediate Deliverable for TO 414 Group Project 2
+
 ### Load Libraries
 
 ```{r}
@@ -78,7 +80,7 @@ summary(train_diamonds)
 summary(test_diamonds)
 ```
 
-70% of the data was randomly selected to be training data, and the remaining 30% of the data is testing data.
+70% of the data was randomly selected to be training data, and 30% of the data is testing data.
 
 ### Linear Regression 
 
@@ -256,7 +258,7 @@ postResample(prediction_values_SVM2, test_diamonds$price)
 
 ### Regression Tree
 
-Note: RMSE, Rsquared, and MAE values commented in code may be different than output
+Note: RMSE, Rsquared, and MAE values commented in code and typed out in this document may be different than output of code
 
 Info about regression trees: https://www.datadriveninvestor.com/2020/04/13/how-do-regression-trees-work/
 
@@ -267,19 +269,21 @@ reg_tree_1 <- rpart(formula = price ~ ., data = train_diamonds)
 prediction_values_reg_tree1 <- predict(reg_tree_1, test_diamonds)
 summary(prediction_values_reg_tree1) # only positive prices predicted
 postResample(prediction_values_reg_tree1, test_diamonds$price)
-# RMSE = 1449.4476204
-# Rsquared = 0.8692558
-# MAE = 905.9587458
+# RMSE = 1423.7770949
+# Rsquared = 0.8738465
+# MAE = 909.6853036
 ```
 
 ```{r, cache = TRUE}
 # Second regression tree
 
-# Gets same RMSE, Rsquared, and MAE as reg_tree_1 
+# RMSE = 1423.7770949, Rsquared = 0.8738465, and MAE = 909.6853036
+# (gets same RMSE, Rsquared, and MAE as reg_tree_1)
 # and only positive prices predicted:
 #control_value = data.frame("minbucket" = 1000)
 
-# Gets same RMSE, Rsquared, and MAE as reg_tree_1
+# RMSE = 1423.7770949, Rsquared = 0.8738465, MAE = 909.6853036
+# (gets same RMSE, Rsquared, and MAE as reg_tree_1)
 # and only positive prices predicted:
 #control_value = data.frame("xval" = 100)
 
@@ -287,26 +291,30 @@ postResample(prediction_values_reg_tree1, test_diamonds$price)
 # and only positive prices predicted:
 #control_value = data.frame("maxdepth" = 1)
 
-# RMSE = 1686.5011751, Rsquared = 0.8230183, and MAE = 1061.1619385
-# and only positive prices predicted:
-#control_value = data.frame("maxdepth" = 2)
-
 # Choose this maxdepth to use for second regression tree:
-# RMSE = 1423.7770949, Rsquared = 0.8738465, and MAE = 909.6853036
-# and only positive prices predicted:
-control_value = data.frame("maxdepth" = 3)
-
 # RMSE = 1686.5011751, Rsquared = 0.8230183, and MAE = 1061.1619385
 # and only positive prices predicted:
-#control_values = data.frame("maxdepth" = 4)
+control_value = data.frame("maxdepth" = 2)
+
+# RMSE = 1423.7770949, Rsquared = 0.8738465, and MAE = 909.6853036
+# (gets same RMSE, Rsquared, and MAE as reg_tree_1)
+# and only positive prices predicted:
+#control_value = data.frame("maxdepth" = 3)
+
+# RMSE = 1423.7770949, Rsquared = 0.8738465, and MAE = 909.6853036
+# (gets same RMSE, Rsquared, and MAE as reg_tree_1)
+# and only positive prices predicted:
+#control_value = data.frame("maxdepth" = 4)
 
 # RMSE = 1423.7770949, Rsquared = 0.8589778, and MAE = 909.6853036
+# (gets same RMSE, Rsquared, and MAE as reg_tree_1)
 # and only positive prices predicted:
-#control_values = data.frame("maxdepth" = 5)
+#control_value = data.frame("maxdepth" = 5)
 
 # RMSE = 1423.7770949, Rsquared = 0.8589778, and MAE = 909.6853036
+# (gets same RMSE, Rsquared, and MAE as reg_tree_1)
 # and only positive prices predicted:
-#control_values = data.frame("maxdepth" = 10)
+#control_value = data.frame("maxdepth" = 10)
 
 reg_tree_2 <- rpart(formula = price ~ ., data = train_diamonds, control = control_value)
 prediction_values_reg_tree2 <- predict(reg_tree_2, test_diamonds)
@@ -314,44 +322,70 @@ summary(prediction_values_reg_tree2)
 postResample(prediction_values_reg_tree2, test_diamonds$price)
 ```
 
-The chosen regression tree is the one with default values for control from the rpart function and predicts price using all the predictor variables.
+The chosen regression tree is the one with default values for control from the rpart function and predicts price using all the predictor variables. This was chosen since it has the smallest RMSE and MAE values and the largest Rsquared value (and also had no extra parameters defined) compared to the other regression trees made. There were other regression trees which have the same RMSE, Rsquared, and MAE values; but those have an additional parameter defined, so the first regression tree was chosen with no extra parameter defined.
 
 ### Random Forest
+
+Note: RMSE, Rsquared, and MAE commented in code and typed out in this document may be different than output of code
 
 #### One random forest made with training data to predict price of testing data using 10 trees
 
 ```{r, cache = TRUE}
-random_forest_model1 <- randomForest(price ~ ., data = train_diamonds, ntree = 10)
-prediction_values_random_forest1 <- predict(random_forest_model1, test_diamonds)
-summary(prediction_values_random_forest1) # only positive prices predicted
-postResample(prediction_values_random_forest1, test_diamonds$price)
-# RMSE = 625.1970581
-# Rsquared = 0.9758139
-# MAE = 307.6215889
+# random_forest_model1 <- randomForest(price ~ ., data = train_diamonds, ntree = 10)
+# prediction_values_random_forest1 <- predict(random_forest_model1, test_diamonds)
+# summary(prediction_values_random_forest1) # only positive prices predicted
+# postResample(prediction_values_random_forest1, test_diamonds$price)
+# RMSE = 619.3511919
+# Rsquared = 0.9762443
+# MAE = 307.3949360
 ```
 
 #### One random forest made with training data to predict price of testing data using 100 trees
 
 ```{r, cache = TRUE}
-random_forest_model2 <- randomForest(price ~ ., data = train_diamonds, ntree = 100)
-prediction_values_random_forest2 <- predict(random_forest_model2, test_diamonds)
-summary(prediction_values_random_forest2) # only positive prices predicted
-postResample(prediction_values_random_forest2, test_diamonds$price)
-# RMSE = 588.6442348
-# Rsquared = 0.9785971
-# MAE = 288.6016663
+# random_forest_model2 <- randomForest(price ~ ., data = train_diamonds, ntree = 100)
+# prediction_values_random_forest2 <- predict(random_forest_model2, test_diamonds)
+# summary(prediction_values_random_forest2) # only positive prices predicted
+# postResample(prediction_values_random_forest2, test_diamonds$price)
+# RMSE = 583.5253041
+# Rsquared = 0.9789491
+# MAE = 286.7713278
 ```
 
 #### One random forest made with training data to predict price of testing data using 500 trees
 
 ```{r, cache = TRUE}
 random_forest_model3 <- randomForest(price ~ ., data = train_diamonds)
-prediction_values_random_forest3 <- predict(random_forest_model1, test_diamonds)
+prediction_values_random_forest3 <- predict(random_forest_model3, test_diamonds)
 summary(prediction_values_random_forest3) # only positive prices predicted
 postResample(prediction_values_random_forest3, test_diamonds$price)
-# RMSE = 625.1970581
-# Rsquared = 0.9758139
-# MAE = 307.6215889
+# RMSE = 579.8030293
+# Rsquared = 0.9792354
+# MAE = 285.0036782
+```
+
+#### One random forest made with training data to predict price of testing data using 200 trees
+
+```{r, cache = TRUE}
+# random_forest_model4 <- randomForest(price ~ ., data = train_diamonds, ntree = 200)
+# prediction_values_random_forest4 <- predict(random_forest_model4, test_diamonds)
+# summary(prediction_values_random_forest4) # only positive prices predicted
+# postResample(prediction_values_random_forest4, test_diamonds$price)
+# RMSE = 581.1154823
+# Rsquared = 0.9791335
+# MAE = 285.5384704
+```
+
+#### One random forest made with training data to predict price of testing data using 50 trees
+
+```{r, cache = TRUE}
+# random_forest_model5 <- randomForest(price ~ ., data = train_diamonds, ntree = 50)
+# prediction_values_random_forest5 <- predict(random_forest_model5, test_diamonds)
+# summary(prediction_values_random_forest5) # only positive prices predicted
+# postResample(prediction_values_random_forest5, test_diamonds$price)
+# RMSE = 586.3089458
+# Rsquared = 0.9787419
+# MAE = 288.1146570
 ```
 
 #### Tuning random forest
@@ -360,15 +394,15 @@ method info for train function: https://topepo.github.io/caret/train-models-by-t
 Random forest info for train function: https://topepo.github.io/caret/train-models-by-tag.html#random-forest 
 
 ```{r, cache = TRUE}
-tune_grid_rf <- data.frame("mtry" = c(1:9)) # Test out number of predictor variables chosen
-ctrl_rf <- trainControl(method = "cv", 10) # use 10-fold cross-validation
-set.seed(12345)
-random_forests <- train(price ~ ., data = diamonds, method = "rf", tuneGrid = tune_grid_rf, trControl = ctrl_rf, ntree = 10)
-random_forests
+# tune_grid_rf <- data.frame("mtry" = c(1:9)) # Test out number of predictor variables chosen
+# ctrl_rf <- trainControl(method = "cv", 10) # use 10-fold cross-validation
+# set.seed(12345)
+# random_forests <- train(price ~ ., data = diamonds, method = "rf", tuneGrid = tune_grid_rf, trControl = ctrl_rf, ntree = 10)
+# random_forests
 # RMSE = 646.2072, Rsquared = 0.9737722, MAE = 311.5486
 ```
 
-A random forest with 100 trees was chosen.
+The random forests with 100, 200, and 500 trees also has RMSE, Rsquared, and MAE values which are similar. The random forest with 500 trees was chosen since it has the smallest RMSE and MAE and the largest Rsquared value among the other random forests made.
 
 ### Stacked Model
 ```{r}
@@ -416,16 +450,15 @@ ANN:
 - Rsquared = 2.494753e-06
 - MAE = 3.039719e+03
 
-
 Regression Tree:
-- RMSE = 1449.4476204
-- Rsquared = 0.8692558
-- MAE = 905.9587458
+- RMSE = 1423.7770949
+- Rsquared = 0.8738465
+- MAE = 909.6853036
 
 Random Forest:
-- RMSE = 588.6442348
-- Rsquared = 0.9785971
-- MAE = 288.6016663
+- RMSE = 579.8030293
+- Rsquared = 0.9792354
+- MAE = 285.0036782
 
 Stacked Regression Tree:
 - RMSE = 899.9276686
