@@ -41,9 +41,6 @@ diamonds$cut <- factor(diamonds$cut, ordered = FALSE)
 diamonds$color <- factor(diamonds$color, ordered = FALSE)
 diamonds$clarity <- factor(diamonds$clarity, ordered = FALSE)
 
-# Convert qualitative variables to dummy variables
-diamonds_new <- as.data.frame(model.matrix(~.-1, diamonds))
-
 normalize <- function(x) {
   return ((x - min(x)) / (max(x) - min(x)))
 }
@@ -52,14 +49,11 @@ normalize <- function(x) {
 diamonds_norm <- as.data.frame(lapply(diamonds_new[,-22], normalize))
 diamonds_norm$price <- diamonds_new$price
 
-# Set diamonds data to diamonds_norm
-diamonds <- diamonds_norm
-
 str(diamonds)
 summary(diamonds)
 ```
 
-Before moving to the analysis of the data set, we cleaned the data to prepare it for regression. Cut, color, and clarity were ordinal factors. We decided to change cut, color, and clarity to be factors which are not ordered and then convert them to dummy variables with a value of 0 if a diamond does not have that characteristic or a value of 1 if a diamond does have that characteristic. All variables except for price were normalized.
+Before moving to the analysis of the data set, we cleaned the data to prepare it for regression. Cut, color, and clarity were ordinal factors. We decided to change cut, color, and clarity to be factors which are not ordered. All variables except for price were normalized.
 
 ### Regression
 
@@ -68,7 +62,7 @@ diamonds_model <- lm(price ~ ., data = diamonds)
 summary(diamonds_model)
 ```
 
-We ran a linear regression model on the cleaned data with the response variable price and included all predictor variables. From doing this, we see that only variables y and z are not statistically significant at an alpha level of 0.05. The dummy variable cutIdeal has an NA value for its coefficient. All other predictor variables are statistically significant at an alpha level of 0.05 (and all of those are even statistically significant at an alpha level of 0.001). Because of having many statistically significant predictor variables at an alpha level of 0.05, we decided to go ahead and choose this dataset to use in this project to predict the price of diamonds.
+We ran a linear regression model on the cleaned data with the response variable price and included all predictor variables. From doing this, we see that only variables y and z are not statistically significant at an alpha level of 0.05. All other predictor variables are statistically significant at an alpha level of 0.05 (and all of those are even statistically significant at an alpha level of 0.001). Because of having many statistically significant predictor variables at an alpha level of 0.05, we decided to go ahead and choose this dataset to use in this project to predict the price of diamonds.
 
 ### Split Data into Training and Testing Data
 
@@ -115,7 +109,6 @@ model1 <- lm(price ~ ., train_diamonds)
 summary(model1)
 prediction_values_lm1 <- predict(model1, test_diamonds)
 summary(prediction_values_lm1)
-summary(actual_vs_expected_diff_lm1)
 postResample(prediction_values_lm1, test_diamonds$price)
 #       RMSE     Rsquared          MAE 
 # 1162.9890409    0.9158249  744.0980344
@@ -125,7 +118,6 @@ model2 <- step(model1, direction = "backward", trace = 0)
 summary(model2)
 prediction_values_lm2 <- predict(model2, test_diamonds)
 summary(prediction_values_lm2)
-summary(actual_vs_expected_diff_lm2)
 postResample(prediction_values_lm2, test_diamonds$price)
 #just removes y
 # RMSE     Rsquared          MAE 
