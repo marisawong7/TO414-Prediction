@@ -246,14 +246,24 @@ postResample(prediction_values_ANN1, test_ANN_norm$price)
 ### SVM
 
 ```{r, cache = TRUE}
-#SVM_model1 <- ksvm(price ~ ., data = train_diamonds, kernel = "vanilladot")
-ctrl_svm <- trainControl(method = "cv", 10)
-#tune_grid_svm <- data.frame("mtry" = c(1:9))
-SVM_model1 <- train(price ~ ., data = train_diamonds, method = "svmLinear",
-                 trControl = ctrl_svm
-                 )
-prediction_values_SVM1 <- predict(SVM_model1, test_diamonds)
-postResample(prediction_values_SVM1, test_diamonds$price)
+#SVM_model1 <- ksvm(price ~ ., data = train_diamonds, kernel = "tanhdot")
+#prediction_values_SVM1 <- predict(SVM_model1, test_diamonds)
+#postResample(prediction_values_SVM1, test_diamonds$price)
+#        RMSE     Rsquared          MAE 
+#1.465553e+07 3.214051e-03 1.203651e+07 
+
+SVM_model2 <- ksvm(price ~ ., data = train_diamonds, kernel = "laplacedot")
+prediction_values_SVM2 <- predict(SVM_model2, test_diamonds)
+postResample(prediction_values_SVM2, test_diamonds$price)
+#     RMSE  Rsquared       MAE 
+#689.49626   0.97049 353.32796 
+
+#SVM_model3 <- ksvm(price ~ ., data = train_diamonds, kernel = "besseldot")
+#prediction_values_SVM3 <- predict(SVM_model3, test_diamonds)
+#postResample(prediction_values_SVM3, test_diamonds$price)
+#        RMSE     Rsquared          MAE 
+# 2.776466e+04 2.860594e-02 1.291670e+04 
+
 ```
 
 ### Regression Tree
