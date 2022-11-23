@@ -139,31 +139,6 @@ postResample(prediction_values_knn1, test_diamonds$price)
 #        RMSE     Rsquared          MAE 
 #1037.3289972    0.9343628  540.2361728 
 
-# # Improving model through changing k
-# knnreg_model2 <- knnreg(price ~ ., data = train_diamonds, k = 10)
-# prediction_values_knn2 <- predict(knnreg_model2, test_diamonds)
-# actual_vs_expected_diff_knn2 <- test_diamonds$price - prediction_values_knn2
-# 
-# postResample(prediction_values_knn2, test_diamonds$price)
-# #        RMSE     Rsquared          MAE 
-# #1056.7784212    0.9343528  553.3987039 
-# 
-# knnreg_model3 <- knnreg(price ~ ., data = train_diamonds, k = 7)
-# prediction_values_knn3 <- predict(knnreg_model3, test_diamonds)
-# actual_vs_expected_diff_knn3 <- test_diamonds$price - prediction_values_knn3
-# 
-# postResample(prediction_values_knn3, test_diamonds$price)
-# #        RMSE     Rsquared          MAE 
-# #1039.6573549    0.9349978  542.4383039 
-# 
-# knnreg_model4 <- knnreg(price ~ ., data = train_diamonds, k = 20)
-# prediction_values_knn4 <- predict(knnreg_model4, test_diamonds)
-# actual_vs_expected_diff_knn4 <- test_diamonds$price - prediction_values_knn4
-# 
-# postResample(prediction_values_knn4, test_diamonds$price)
-# #        RMSE     Rsquared          MAE 
-# #1100.2318281    0.9311135  580.5150942 
-
 # Train the model to find kval
 set.seed(300)
 grid <- expand.grid(k = c(1, 5, 9, 10, 15, 20, 25, 30, 35))
@@ -171,12 +146,11 @@ ctrl <- trainControl(method = "cv",
                      number = 10,
                      repeats = 10)
 
-m <- train(default ~ ., data = credit, method = "knn",
-           metric = "Kappa",
+m <- train(price ~ ., data = train_diamonds, method = "knn",
            trControl = ctrl,
            tuneGrid = grid)
 m
-# k = 9 best (check)
+# k = 9 best 
 
 knnreg_model_train <- knnreg(price ~ ., data = train_diamonds, k = 9)
 summary(knnreg_model_train)
@@ -408,7 +382,7 @@ The random forests with 100, 200, and 500 trees also has RMSE, Rsquared, and MAE
 ```{r}
 # note: need to double check ANN 
 # note: may need to update KNN
-stack_model <- data.frame(prediction_values_lm3, prediction_values_knn1, prediction_values_ANN2, prediction_values_SVM2, prediction_values_reg_tree1, prediction_values_random_forest2, test_diamonds$price)
+stack_model <- data.frame(prediction_values_lm3, prediction_values_train_knn, prediction_values_ANN2, prediction_values_SVM2, prediction_values_reg_tree1, prediction_values_random_forest2, test_diamonds$price)
 summary(stack_model)
 str(stack_model)
 ```
@@ -436,9 +410,9 @@ Linear regression:
 - MAE = 628.8434045 
 
 KNN regression:
-- RMSE =
-- Rsquared = 
-- MAE = 
+- RMSE = 1049.7342230
+- Rsquared = 0.9348145
+- MAE = 550.5465499
 
 SVM:
 - RMSE = 689.49626
