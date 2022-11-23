@@ -388,23 +388,21 @@ method info for train function: https://topepo.github.io/caret/train-models-by-t
 Random forest info for train function: https://topepo.github.io/caret/train-models-by-tag.html#random-forest 
 
 ```{r, cache = TRUE}
-tune_grid_rf <- data.frame("mtry" = c(1:24)) # Test out number of predictor variables chosen
-ctrl_rf <- trainControl(method = "cv", 10) # use 10-fold cross-validation
-set.seed(12345)
-random_forests <- train(price ~ ., data = diamonds, method = "rf", tuneGrid = tune_grid_rf, trControl = ctrl_rf, ntree = 10)
-random_forests
-
-# Using RMSE, mtry = 9 was chosen (RMSE = 646.2072, Rsquared = 0.9737722, MAE = 311.5486)
+# tune_grid_rf <- data.frame("mtry" = c(1:24)) # Test out number of predictor variables chosen
+# ctrl_rf <- trainControl(method = "cv", 10) # use 10-fold cross-validation
+# set.seed(12345)
+# random_forests <- train(price ~ ., data = diamonds, method = "rf", tuneGrid = tune_grid_rf, trControl = ctrl_rf, ntree = 10)
+# random_forests
 ```
 
 ```{r}
-ntree_values <- c(10, 100, 500, 1000)
-for(i in ntree_values){
-  random_forest_model <- randomForest(price ~ ., data = train_diamonds, ntree = 100)
-  prediction_values_random_forest <- predict(random_forest_model, test_diamonds)
-  evaluation_values <- postResample(prediction_values_random_forest, test_diamonds$price)
-  return(values, prediction_values_random_forest)
-}
+# ntree_values <- c(10, 100, 500, 1000)
+# for(i in ntree_values){
+#   random_forest_model <- randomForest(price ~ ., data = train_diamonds, ntree = 100)
+#   prediction_values_random_forest <- predict(random_forest_model, test_diamonds)
+#   evaluation_values <- postResample(prediction_values_random_forest, test_diamonds$price)
+#   return(values, prediction_values_random_forest)
+# }
 ```
 
 A random forest with 100 trees was chosen.
