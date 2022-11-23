@@ -173,14 +173,18 @@ postResample(prediction_values_knn1, test_diamonds$price)
 # Train the model to find kval
 library(caret)
 set.seed(300)
-k <- train(price ~ ., data = train_diamonds, method = "knn")
-# summary of tuning results
-k
-# k = 9 best
-# k  RMSE      Rsquared   MAE     
-#   5  1152.713  0.9172425  612.3353
-#   7  1133.521  0.9209492  604.8246
-#   9  1125.447  0.9229289  601.9236
+grid <- expand.grid(k = c(1, 5, 9, 10, 15, 20, 25, 30, 35))
+ctrl <- trainControl(method = "cv", 
+                     number = 10,
+                     repeats = 10)
+
+m <- train(default ~ ., data = credit, method = "knn",
+           metric = "Kappa",
+           trControl = ctrl,
+           tuneGrid = grid)
+m
+# k = 9 best (check)
+
 knnreg_model_train <- knnreg(price ~ ., data = train_diamonds, k = 9)
 summary(knnreg_model_train)
 prediction_values_train_knn <- predict(knnreg_model_train, test_diamonds)
