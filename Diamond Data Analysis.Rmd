@@ -185,67 +185,62 @@ postResample(prediction_values_train_knn, test_diamonds$price)
 # ANN 
 
 ```{r, cache = TRUE}
+
 # need to break into dummy variables
 library(gmodels)
 library(caret)
 library(neuralnet)
 
 train_ANN <- as.data.frame(model.matrix(~.-1, train_diamonds))
+test_ANN <- as.data.frame(model.matrix(~.-1,test_diamonds))
+
 normalize <- function(x) {
   return ((x - min(x)) / (max(x) - min(x)))
 }
-train_ANN_nor <- as.data.frame(lapply(train_ANN, normalize))
-test_ANN_nor <- as.data.frame(lapply(test_ANN, normalize))
+train_ANN_norm <- as.data.frame(lapply(train_ANN, normalize))
+test_ANN_norm <- as.data.frame(lapply(test_ANN, normalize))
 
-
-test_ANN <- as.data.frame(model.matrix(~.-1,test_diamonds))
-str(train_ANN)
-str(test_ANN)
 
 # Model 1 (Baseline)
-ANN_model1 <- neuralnet(formula = price ~ ., data = train_ANN_nor)
+ANN_model1 <- neuralnet(formula = price ~ ., data = train_ANN_norm)
 plot(ANN_model1)
-prediction_ANN_1 <- predict(ANN_model1, newdata = test_ANN_nor)
-binaryprediction_1 <- ifelse(prediction_ANN_1 > 0.5, 1, 0)
-# Create Confusion Matrix
-CrossTable(x = test_ANN_nor$price, y = binaryprediction_1, propsq = FALSE)
-# Evaluate confusion matrix
-(confusion_matrix_model_ANN1 <- confusionMatrix(as.factor(binaryprediction_1), as.factor(test_ANN_nor$price), positive = "1"))
-# Sensitivity:    ; Pos Pred Value:
-
+prediction_values_ANN1 <- predict(ANN_model1, test_ANN_norm)
+actual_vs_expected_diff_ANN1 <- test_ANN_norm$price - prediction_values_ANN1
+postResample(prediction_values_ANN1, test_ANN_norm$price)
+## RMSE      Rsquared   MAE
 
 # # Model 2 (Adding Nodes)
 # ANN_model2 <- neuralnet(formula = price ~ ., data = train_diamonds, hidden = 3)
 # plot(ANN_model2)
-# prediction_ANN_2 <- predict(ANN_model2, newdata = test_diamonds)
-# binaryprediction_2 <- ifelse(prediction_ANN_2 > 0.5, 1, 0)
-# # Create Confusion Matrix
-# CrossTable(x = test_diamonds$price, y = binaryprediction_2, propsq = FALSE)
-# # Evaluate confusion matrix
-# (confusion_matrix_model_ANN2 <- confusionMatrix(as.factor(binaryprediction_2), as.factor(test_diamonds$price), positive = "1"))
- 
+# prediction_values_ANN2 <- predict(ANN_model2, test_ANN_norm)
+# actual_vs_expected_diff_ANN2 <- test_ANN_norm$price - prediction_values_ANN2
+# postResample(prediction_values_ANN2, test_ANN_norm$price)
+# # RMSE      Rsquared   MAE
 
 
 # # Model 3 (Adding Layers)
 # ANN_model3 <- neuralnet(formula = price ~ ., data = train_diamonds, hidden = c(2,3), threshold = 0.01, stepmax = 10^5)
 # plot(ANN_model3)
-# prediction_ANN_3 <- predict(ANN_model3, newdata = test_diamonds)
-# binaryprediction_3 <- ifelse(prediction_ANN_3 > 0.5, 1, 0)
-# # Create Confusion Matrix
-# CrossTable(x = test_diamonds$price, y = binaryprediction_3, propsq = FALSE)
-# # Evaluate confusion matrix
-# (confusion_matrix_model_ANN3 <-confusionMatrix(as.factor(binaryprediction_3), as.factor(test_diamonds$price), positive = "1"))
+# prediction_values_ANN3 <- predict(ANN_model3, test_ANN_norm)
+# actual_vs_expected_diff_ANN3 <- test_ANN_norm$price - prediction_values_ANN3
+# postResample(prediction_values_ANN3, test_ANN_norm$price)
+# # RMSE      Rsquared   MAE
 
 
-# # Model 4 (Adjusting Binary Prediction Definition)
-# ANN_model4 <- neuralnet(formula = price ~ ., data = train_diamonds)
-# plot(ANN_model4)
-# prediction_ANN_4 <- predict(ANN_model4, newdata = test_diamonds)
-# binaryprediction_4 <- ifelse(prediction_ANN_4 > 0.4, 1, 0)
-# # Create Confusion Matrix
-# CrossTable(x = test_diamonds$price, y = binaryprediction_4, propsq = FALSE)
-# # Evaluate confusion matrix
-# (confusion_matrix_model_ANN4 <-confusionMatrix(as.factor(binaryprediction_4), as.factor(test_diamonds$price), positive = "1"))
+#  # Model 4 (Using train function)
+# set.seed(300)
+# ctrl <- trainControl(method = "cv", number = 10)
+# grid <- expand.grid(.model = "tree",
+#                     .trials = c(1, 5, 10, 15, 20, 25, 30, 35),
+#                     .winnow = "FALSE")
+# ANN_model4 <- train(price ~ ., data = train_ANN_norm, method = "nnet", trControl = ctrl, tuneGrid = grid))
+# ANN_model4
+# summary(ANN_model4)
+# prediction_values_ANN4 <- predict(ANN_model4, test_ANN_norm)
+# summary(prediction_values_ANN4)
+# postResample(prediction_values_ANN4, test_ANN_norm$price)
+# # RMSE      Rsquared   MAE
+
 ```
 
 ### SVM
