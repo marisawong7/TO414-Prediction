@@ -165,14 +165,18 @@ postResample(prediction_values_knn1, test_diamonds$price)
 # Train the model to find kval
 library(caret)
 set.seed(300)
-k <- train(price ~ ., data = train_diamonds, method = "knn")
-# summary of tuning results
-k
-# k = 9 best
-# k  RMSE      Rsquared   MAE     
-#   5  1152.713  0.9172425  612.3353
-#   7  1133.521  0.9209492  604.8246
-#   9  1125.447  0.9229289  601.9236
+grid <- expand.grid(k = c(1, 5, 9, 10, 15, 20, 25, 30, 35))
+ctrl <- trainControl(method = "cv", 
+                     number = 10,
+                     repeats = 10)
+
+m <- train(default ~ ., data = credit, method = "knn",
+           metric = "Kappa",
+           trControl = ctrl,
+           tuneGrid = grid)
+m
+# k = 9 best (check)
+
 knnreg_model_train <- knnreg(price ~ ., data = train_diamonds, k = 9)
 summary(knnreg_model_train)
 prediction_values_train_knn <- predict(knnreg_model_train, test_diamonds)
@@ -185,7 +189,6 @@ postResample(prediction_values_train_knn, test_diamonds$price)
 # ANN 
 
 ```{r, cache = TRUE}
-
 # need to break into dummy variables
 library(gmodels)
 library(caret)
@@ -197,9 +200,10 @@ test_ANN <- as.data.frame(model.matrix(~.-1,test_diamonds))
 normalize <- function(x) {
   return ((x - min(x)) / (max(x) - min(x)))
 }
-train_ANN_norm <- as.data.frame(lapply(train_ANN, normalize))
-test_ANN_norm <- as.data.frame(lapply(test_ANN, normalize))
-
+train_ANN_norm <- as.data.frame(lapply(train_ANN[,-22] , normalize))
+train_ANN_norm$price <- train_ANN$price
+test_ANN_norm <- as.data.frame(lapply(test_ANN[,-22], normalize))
+test_ANN_norm$price <- test_ANN$price
 
 # Model 1 (Baseline)
 ANN_model1 <- neuralnet(formula = price ~ ., data = train_ANN_norm)
@@ -208,9 +212,10 @@ prediction_values_ANN1 <- predict(ANN_model1, test_ANN_norm)
 actual_vs_expected_diff_ANN1 <- test_ANN_norm$price - prediction_values_ANN1
 postResample(prediction_values_ANN1, test_ANN_norm$price)
 ## RMSE      Rsquared   MAE
+#
 
 # # Model 2 (Adding Nodes)
-# ANN_model2 <- neuralnet(formula = price ~ ., data = train_diamonds, hidden = 3)
+# ANN_model2 <- neuralnet(formula = price ~ ., data = train_ANN_norm, hidden = 3)
 # plot(ANN_model2)
 # prediction_values_ANN2 <- predict(ANN_model2, test_ANN_norm)
 # actual_vs_expected_diff_ANN2 <- test_ANN_norm$price - prediction_values_ANN2
@@ -219,12 +224,13 @@ postResample(prediction_values_ANN1, test_ANN_norm$price)
 
 
 # # Model 3 (Adding Layers)
-# ANN_model3 <- neuralnet(formula = price ~ ., data = train_diamonds, hidden = c(2,3), threshold = 0.01, stepmax = 10^5)
+# ANN_model3 <- neuralnet(formula = price ~ ., data = train_ANN_norm, hidden = c(2,3), threshold = 0.01, stepmax = 10^5)
 # plot(ANN_model3)
 # prediction_values_ANN3 <- predict(ANN_model3, test_ANN_norm)
 # actual_vs_expected_diff_ANN3 <- test_ANN_norm$price - prediction_values_ANN3
 # postResample(prediction_values_ANN3, test_ANN_norm$price)
-# # RMSE      Rsquared   MAE
+# #     RMSE Rsquared      MAE 
+# # 4008.756       NA 3039.719 
 
 
 #  # Model 4 (Using train function)
@@ -233,7 +239,7 @@ postResample(prediction_values_ANN1, test_ANN_norm$price)
 # grid <- expand.grid(.model = "tree",
 #                     .trials = c(1, 5, 10, 15, 20, 25, 30, 35),
 #                     .winnow = "FALSE")
-# ANN_model4 <- train(price ~ ., data = train_ANN_norm, method = "nnet", trControl = ctrl, tuneGrid = grid))
+# ANN_model4 <- train(price ~ ., data = train_ANN_norm, method = "nnet", trControl = ctrl, tuneGrid = grid)
 # ANN_model4
 # summary(ANN_model4)
 # prediction_values_ANN4 <- predict(ANN_model4, test_ANN_norm)
