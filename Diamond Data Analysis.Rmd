@@ -41,19 +41,11 @@ diamonds$cut <- factor(diamonds$cut, ordered = FALSE)
 diamonds$color <- factor(diamonds$color, ordered = FALSE)
 diamonds$clarity <- factor(diamonds$clarity, ordered = FALSE)
 
-normalize <- function(x) {
-  return ((x - min(x)) / (max(x) - min(x)))
-}
-
-# Normalize data except for price
-diamonds_norm <- as.data.frame(lapply(diamonds_new[,-22], normalize))
-diamonds_norm$price <- diamonds_new$price
-
 str(diamonds)
 summary(diamonds)
 ```
 
-Before moving to the analysis of the data set, we cleaned the data to prepare it for regression. Cut, color, and clarity were ordinal factors. We decided to change cut, color, and clarity to be factors which are not ordered. All variables except for price were normalized.
+Before moving to the analysis of the data set, we cleaned the data to prepare it for regression. Cut, color, and clarity were ordinal factors. We decided to change cut, color, and clarity to be factors which are not ordered.
 
 ### Regression
 
@@ -312,19 +304,19 @@ postResample(prediction_values_reg_tree1, test_diamonds$price)
 #control_value = data.frame("maxdepth" = 2)
 
 # Choose this maxdepth to use for second regression tree:
-# RMSE = 1505.3413035, Rsquared = 0.8589778, and MAE = 949.7464466
+# RMSE = 1423.7770949, Rsquared = 0.8738465, and MAE = 909.6853036
 # and only positive prices predicted:
-control_value = data.frame("maxdepth" = 3)
+#control_value = data.frame("maxdepth" = 3)
 
-# RMSE = 1505.3413035, Rsquared = 0.8589778, and MAE = 949.7464466
+# RMSE = 1686.5011751, Rsquared = 0.8230183, and MAE = 1061.1619385
 # and only positive prices predicted:
 #control_values = data.frame("maxdepth" = 4)
 
-# RMSE = 1505.3413035, Rsquared = 0.8589778, and MAE = 949.7464466
+# RMSE = 1423.7770949, Rsquared = 0.8589778, and MAE = 909.6853036
 # and only positive prices predicted:
 #control_values = data.frame("maxdepth" = 5)
 
-# RMSE = 1505.3413035, Rsquared = 0.8589778, and MAE = 949.7464466
+# RMSE = 1423.7770949, Rsquared = 0.8589778, and MAE = 909.6853036
 # and only positive prices predicted:
 #control_values = data.frame("maxdepth" = 10)
 
@@ -380,28 +372,21 @@ method info for train function: https://topepo.github.io/caret/train-models-by-t
 Random forest info for train function: https://topepo.github.io/caret/train-models-by-tag.html#random-forest 
 
 ```{r, cache = TRUE}
-# tune_grid_rf <- data.frame("mtry" = c(1:24)) # Test out number of predictor variables chosen
-# ctrl_rf <- trainControl(method = "cv", 10) # use 10-fold cross-validation
-# set.seed(12345)
-# random_forests <- train(price ~ ., data = diamonds, method = "rf", tuneGrid = tune_grid_rf, trControl = ctrl_rf, ntree = 10)
-# random_forests
-```
-
-```{r}
-# ntree_values <- c(10, 100, 500, 1000)
-# for(i in ntree_values){
-#   random_forest_model <- randomForest(price ~ ., data = train_diamonds, ntree = 100)
-#   prediction_values_random_forest <- predict(random_forest_model, test_diamonds)
-#   evaluation_values <- postResample(prediction_values_random_forest, test_diamonds$price)
-#   return(values, prediction_values_random_forest)
-# }
+tune_grid_rf <- data.frame("mtry" = c(1:9)) # Test out number of predictor variables chosen
+ctrl_rf <- trainControl(method = "cv", 10) # use 10-fold cross-validation
+set.seed(12345)
+random_forests <- train(price ~ ., data = diamonds, method = "rf", tuneGrid = tune_grid_rf, trControl = ctrl_rf, ntree = 10)
+random_forests
+# RMSE = 646.2072, Rsquared = 0.9737722, MAE = 311.5486
 ```
 
 A random forest with 100 trees was chosen.
 
 ### Stacked Model
 ```{r}
-# stack_model <- data.frame(prediction models, test_diamonds$price)
+# note: need to double check ANN 
+# note: may need to update KNN
+stack_model <- data.frame(prediction_values_lm3, prediction_values_knn1, prediction_values_SVM2, prediction_values_reg_tree1, prediction_values_random_forest2, test_diamonds$price)
 # summary(stack_model)
 # str(stack_model)
 ```
