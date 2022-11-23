@@ -147,9 +147,8 @@ knnreg_model1 <- knnreg(price ~ ., data = train_diamonds, k = 5)
 summary(knnreg_model1)
 prediction_values_knn1 <- predict(knnreg_model1, test_diamonds)
 summary(prediction_values_knn1)
-actual_vs_expected_diff_knn1 <- test_diamonds$price - prediction_values_knn1
-summary(actual_vs_expected_diff_knn1)
-
+# actual_vs_expected_diff_knn1 <- test_diamonds$price - prediction_values_knn1
+# summary(actual_vs_expected_diff_knn1)
 postResample(prediction_values_knn1, test_diamonds$price)
 #        RMSE     Rsquared          MAE 
 #1037.3289972    0.9343628  540.2361728 
@@ -178,6 +177,25 @@ postResample(prediction_values_knn1, test_diamonds$price)
 # postResample(prediction_values_knn4, test_diamonds$price)
 # #        RMSE     Rsquared          MAE 
 # #1100.2318281    0.9311135  580.5150942 
+
+# Train the model to find kval
+library(caret)
+set.seed(300)
+k <- train(price ~ ., data = train_diamonds, method = "knn")
+# summary of tuning results
+k
+# k = 9 best
+# k  RMSE      Rsquared   MAE     
+#   5  1152.713  0.9172425  612.3353
+#   7  1133.521  0.9209492  604.8246
+#   9  1125.447  0.9229289  601.9236
+knnreg_model_train <- knnreg(price ~ ., data = train_diamonds, k = 9)
+summary(knnreg_model_train)
+prediction_values_train_knn <- predict(knnreg_model_train, test_diamonds)
+summary(prediction_values_train_knn)
+postResample(prediction_values_train_knn, test_diamonds$price)
+#        RMSE     Rsquared          MAE 
+#1049.7342230    0.9348145  550.5465499 
 ```
 
 # ANN 
