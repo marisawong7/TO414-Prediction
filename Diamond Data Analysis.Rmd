@@ -440,4 +440,4 @@ Stacked Regression Tree:
 - Rsquared = 0.9525313
 - MAE = 549.0019546 
 
-Comparing the RMSE, Rsquared, and MAE values for the chosen models and the stacked model, the random forest appears to fit the data the best since it has the smallest RMSE and MAE values and has the largest Rsquared value. The chosen random forest contains 500 trees.
+Comparing the RMSE, Rsquared, and MAE values for the chosen models and the stacked model, the random forest seems to be the best at predicting price since it has the smallest RMSE and MAE values and has the largest Rsquared value. The chosen random forest contains 500 trees.
