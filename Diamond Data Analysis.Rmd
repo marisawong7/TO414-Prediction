@@ -189,11 +189,7 @@ postResample(prediction_values_train_knn, test_diamonds$price)
 # ANN 
 
 ```{r, cache = TRUE}
-# need to break into dummy variables
-library(gmodels)
-library(caret)
-library(neuralnet)
-
+# Change categorical variables into dummy variables
 train_ANN <- as.data.frame(model.matrix(~.-1, train_diamonds))
 test_ANN <- as.data.frame(model.matrix(~.-1,test_diamonds))
 
@@ -392,7 +388,7 @@ A random forest with 100 trees was chosen.
 ```{r}
 # note: need to double check ANN 
 # note: may need to update KNN
-stack_model <- data.frame(prediction_values_lm3, prediction_values_knn1, prediction_values_SVM2, prediction_values_reg_tree1, prediction_values_random_forest2, test_diamonds$price)
+stack_model <- data.frame(prediction_values_lm3, prediction_values_knn1, prediction_values_ANN1, prediction_values_SVM2, prediction_values_reg_tree1, prediction_values_random_forest2, test_diamonds$price)
 # summary(stack_model)
 # str(stack_model)
 ```
