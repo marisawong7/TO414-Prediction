@@ -329,6 +329,7 @@ Note: RMSE, Rsquared, and MAE commented in code and typed out in this document m
 #### One random forest made with training data to predict price of testing data using 500 trees
 
 ```{r, cache = TRUE}
+# Chosen random forest:
 random_forest_model3 <- randomForest(price ~ ., data = train_diamonds)
 prediction_values_random_forest3 <- predict(random_forest_model3, test_diamonds)
 summary(prediction_values_random_forest3) # only positive prices predicted
@@ -362,7 +363,7 @@ postResample(prediction_values_random_forest3, test_diamonds$price)
 # MAE = 288.1146570
 ```
 
-#### Tuning random forest
+#### Testing number of predictor variables chosen for random forest
 
 method info for train function: https://topepo.github.io/caret/train-models-by-tag.html 
 Random forest info for train function: https://topepo.github.io/caret/train-models-by-tag.html#random-forest 
@@ -380,9 +381,7 @@ The random forests with 100, 200, and 500 trees also has RMSE, Rsquared, and MAE
 
 ### Stacked Model
 ```{r}
-# note: need to double check ANN 
-# note: may need to update KNN
-stack_model <- data.frame(prediction_values_lm3, prediction_values_train_knn, prediction_values_ANN2, prediction_values_SVM2, prediction_values_reg_tree1, prediction_values_random_forest2, test_diamonds$price)
+stack_model <- data.frame(prediction_values_lm3, prediction_values_train_knn, prediction_values_ANN2, prediction_values_SVM2, prediction_values_reg_tree1, prediction_values_random_forest3, test_diamonds$price)
 summary(stack_model)
 str(stack_model)
 ```
@@ -394,7 +393,7 @@ stack_train <- stack_model[-stack_test_set, ]
 stack_test <- stack_model[stack_test_set, ]
 ```
 
-## Stack Regression Tree
+## Stacked Regression Tree
 ```{r}
 stack_rt <- rpart(formula = test_diamonds.price ~ ., data = stack_train)
 stack_rt
@@ -403,6 +402,8 @@ stack_predictions_rt <- predict(stack_rt, stack_test)
 postResample(stack_predictions_rt, stack_test$test_diamonds.price)
 # RMSE = 899.9276686, Rsquared = 0.9487222, MAE = 566.5059942 
 ```
+
+RMSE, Rsquared, and MAE for the chosen models and the stacked model:
 
 Linear regression:
 - RMSE = 1033.2668851
@@ -435,6 +436,8 @@ Random Forest:
 - MAE = 285.0036782
 
 Stacked Regression Tree:
-- RMSE = 899.9276686
-- Rsquared = 0.9487222
-- MAE = 566.5059942 
+- RMSE = 882.1945156
+- Rsquared = 0.9525313
+- MAE = 549.0019546 
+
+Comparing the RMSE, Rsquared, and MAE values for the chosen models and the stacked model, the random forest appears to fit the data the best since it has the smallest RMSE and MAE values and has the largest Rsquared value. The chosen random forest contains 500 trees.
