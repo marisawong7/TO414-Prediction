@@ -197,7 +197,6 @@ postResample(prediction_values_train_knn, test_diamonds$price)
 # ANN 
 
 ```{r, cache = TRUE}
-
 # need to break into dummy variables
 library(gmodels)
 library(caret)
@@ -209,9 +208,10 @@ test_ANN <- as.data.frame(model.matrix(~.-1,test_diamonds))
 normalize <- function(x) {
   return ((x - min(x)) / (max(x) - min(x)))
 }
-train_ANN_norm <- as.data.frame(lapply(train_ANN, normalize))
-test_ANN_norm <- as.data.frame(lapply(test_ANN, normalize))
-
+train_ANN_norm <- as.data.frame(lapply(train_ANN[,-22] , normalize))
+train_ANN_norm$price <- train_ANN$price
+test_ANN_norm <- as.data.frame(lapply(test_ANN[,-22], normalize))
+test_ANN_norm$price <- test_ANN$price
 
 # Model 1 (Baseline)
 ANN_model1 <- neuralnet(formula = price ~ ., data = train_ANN_norm)
@@ -220,9 +220,10 @@ prediction_values_ANN1 <- predict(ANN_model1, test_ANN_norm)
 actual_vs_expected_diff_ANN1 <- test_ANN_norm$price - prediction_values_ANN1
 postResample(prediction_values_ANN1, test_ANN_norm$price)
 ## RMSE      Rsquared   MAE
+#
 
 # # Model 2 (Adding Nodes)
-# ANN_model2 <- neuralnet(formula = price ~ ., data = train_diamonds, hidden = 3)
+# ANN_model2 <- neuralnet(formula = price ~ ., data = train_ANN_norm, hidden = 3)
 # plot(ANN_model2)
 # prediction_values_ANN2 <- predict(ANN_model2, test_ANN_norm)
 # actual_vs_expected_diff_ANN2 <- test_ANN_norm$price - prediction_values_ANN2
@@ -231,12 +232,13 @@ postResample(prediction_values_ANN1, test_ANN_norm$price)
 
 
 # # Model 3 (Adding Layers)
-# ANN_model3 <- neuralnet(formula = price ~ ., data = train_diamonds, hidden = c(2,3), threshold = 0.01, stepmax = 10^5)
+# ANN_model3 <- neuralnet(formula = price ~ ., data = train_ANN_norm, hidden = c(2,3), threshold = 0.01, stepmax = 10^5)
 # plot(ANN_model3)
 # prediction_values_ANN3 <- predict(ANN_model3, test_ANN_norm)
 # actual_vs_expected_diff_ANN3 <- test_ANN_norm$price - prediction_values_ANN3
 # postResample(prediction_values_ANN3, test_ANN_norm$price)
-# # RMSE      Rsquared   MAE
+# #     RMSE Rsquared      MAE 
+# # 4008.756       NA 3039.719 
 
 
 #  # Model 4 (Using train function)
@@ -245,7 +247,7 @@ postResample(prediction_values_ANN1, test_ANN_norm$price)
 # grid <- expand.grid(.model = "tree",
 #                     .trials = c(1, 5, 10, 15, 20, 25, 30, 35),
 #                     .winnow = "FALSE")
-# ANN_model4 <- train(price ~ ., data = train_ANN_norm, method = "nnet", trControl = ctrl, tuneGrid = grid))
+# ANN_model4 <- train(price ~ ., data = train_ANN_norm, method = "nnet", trControl = ctrl, tuneGrid = grid)
 # ANN_model4
 # summary(ANN_model4)
 # prediction_values_ANN4 <- predict(ANN_model4, test_ANN_norm)
