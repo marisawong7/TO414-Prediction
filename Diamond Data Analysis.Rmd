@@ -133,8 +133,6 @@ knnreg_model1 <- knnreg(price ~ ., data = train_diamonds, k = 5)
 summary(knnreg_model1)
 prediction_values_knn1 <- predict(knnreg_model1, test_diamonds)
 summary(prediction_values_knn1)
-# actual_vs_expected_diff_knn1 <- test_diamonds$price - prediction_values_knn1
-# summary(actual_vs_expected_diff_knn1)
 postResample(prediction_values_knn1, test_diamonds$price)
 #        RMSE     Rsquared          MAE 
 #1037.3289972    0.9343628  540.2361728 
