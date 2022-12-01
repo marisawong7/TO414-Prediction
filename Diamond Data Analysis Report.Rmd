@@ -1,0 +1,443 @@
+---
+title: "Diamond Data Analysis Report"
+author: "Ally Weingarden, Juliet Niebylski, Ziying Peng, Leah Sun, Marisa Wong"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Intermediate Deliverable for TO 414 Group Project 2
+
+### Load Libraries
+
+```{r}
+library(ggplot2)
+library(caret)
+library(neuralnet)
+library(rpart)
+library(kernlab)
+library(randomForest)
+```
+
+### Load in Data
+
+```{r, cache = TRUE}
+diamonds <- diamonds
+summary(diamonds)
+str(diamonds)
+nrow(diamonds)
+```
+
+Data is from the ggplot2 library in R.
+
+For the second group project, we have chosen a dataset on diamonds. This dataset has 10 variables which includes the price as well as various characteristics about diamonds. There are 53940 observations of data in this dataset. Our business question is: how should we price diamonds based on certain characteristics? We will answer this question by creating models to predict the price using a variety of characteristics about diamonds. This addresses the business problem of setting prices for a seller's inventory of diamonds since it is important to set reasonable prices based on what other similar diamonds are selling for.
+
+### Clean Data
+
+```{r, cache = TRUE}
+# Make certain variables to be a factor 
+# cut, color, clarity 
+diamonds$cut <- factor(diamonds$cut, ordered = FALSE)
+diamonds$color <- factor(diamonds$color, ordered = FALSE)
+diamonds$clarity <- factor(diamonds$clarity, ordered = FALSE)
+
+str(diamonds)
+summary(diamonds)
+```
+
+Before moving to the analysis of the data set, we cleaned the data to prepare it for regression. Cut, color, and clarity were ordinal factors. We decided to change cut, color, and clarity to be factors which are not ordered.
+
+### Regression
+
+```{r, cache = TRUE}
+diamonds_model <- lm(price ~ ., data = diamonds)
+summary(diamonds_model)
+```
+
+We ran a linear regression model on the cleaned data with the response variable price and included all predictor variables. From doing this, we see that only variables y and z are not statistically significant at an alpha level of 0.05. All other predictor variables are statistically significant at an alpha level of 0.05 (and all of those are even statistically significant at an alpha level of 0.001). Because of having many statistically significant predictor variables at an alpha level of 0.05, we decided to go ahead and choose this dataset to use in this project to predict the price of diamonds.
+
+### Split Data into Training and Testing Data
+
+```{r, cache = TRUE}
+# Get value of 70% of the data
+num_training_data <- round(0.7 * nrow(diamonds))
+
+# Get random sample of indexes for the training data
+set.seed(123) # Set a seed
+train_index <- sample(x = c(1:nrow(diamonds)), size = num_training_data, replace = FALSE)
+
+# Get training data based on the train_index values randomly selected
+train_diamonds <- diamonds[train_index,]
+# Get testing data
+test_diamonds <- diamonds[-train_index,]
+# Check: make sure the number of values in training set and testing set 
+# add to the number of rows in the original dataset
+nrow(diamonds) == nrow(train_diamonds) + nrow(test_diamonds)
+# Get summary of training and test data, make sure similar distribution of price values
+summary(train_diamonds)
+summary(test_diamonds)
+```
+
+70% of the data was randomly selected to be training data, and 30% of the data is testing data.
+
+### Linear Regression 
+
+```{r, cache = TRUE}
+plot( ~ price + carat + depth + table + x + y + z, data = train_diamonds)
+#quadratic relationship between x and price
+
+hist(train_diamonds$price)
+hist(train_diamonds$carat)
+hist(train_diamonds$depth)
+hist(train_diamonds$table)
+hist(train_diamonds$x)
+hist(train_diamonds$y)
+hist(train_diamonds$z)
+# carat has a heavy right skew
+
+
+# Main effects model
+model1 <- lm(price ~ ., train_diamonds)
+summary(model1)
+prediction_values_lm1 <- predict(model1, test_diamonds)
+summary(prediction_values_lm1)
+postResample(prediction_values_lm1, test_diamonds$price)
+#       RMSE     Rsquared          MAE 
+# 1162.9890409    0.9158249  744.0980344
+
+#Step Model
+model2 <- step(model1, direction = "backward", trace = 0)
+summary(model2)
+prediction_values_lm2 <- predict(model2, test_diamonds)
+summary(prediction_values_lm2)
+postResample(prediction_values_lm2, test_diamonds$price)
+#just removes y
+# RMSE     Rsquared          MAE 
+# 1162.7095378    0.9158652  744.0409995 
+
+# Interactions
+model3 <- lm(price ~ clarity + color + cut + log(carat) + depth + table + x + z + clarity*cut + clarity*color + color*cut + carat*color + depth*cut + depth*color + x*depth + z*depth + I(x^2), train_diamonds)
+summary(model3)
+prediction_values_lm3 <- predict(model3, test_diamonds)
+summary(prediction_values_lm3)
+postResample(prediction_values_lm3, test_diamonds$price)
+#  RMSE     Rsquared          MAE 
+# 1033.2668851    0.9335579  628.8434045 
+
+```
+
+### KNN Regression
+
+```{r, cache = TRUE}
+knnreg_model1 <- knnreg(price ~ ., data = train_diamonds, k = 5)
+summary(knnreg_model1)
+prediction_values_knn1 <- predict(knnreg_model1, test_diamonds)
+summary(prediction_values_knn1)
+postResample(prediction_values_knn1, test_diamonds$price)
+#        RMSE     Rsquared          MAE 
+#1037.3289972    0.9343628  540.2361728 
+
+# Train the model to find kval
+set.seed(300)
+grid <- expand.grid(k = c(1, 5, 9, 10, 15, 20, 25, 30, 35))
+ctrl <- trainControl(method = "cv", 
+                     number = 10,
+                     repeats = 10)
+
+m <- train(price ~ ., data = train_diamonds, method = "knn",
+           trControl = ctrl,
+           tuneGrid = grid)
+m
+# k = 9 best 
+
+knnreg_model_train <- knnreg(price ~ ., data = train_diamonds, k = 9)
+summary(knnreg_model_train)
+prediction_values_train_knn <- predict(knnreg_model_train, test_diamonds)
+summary(prediction_values_train_knn)
+postResample(prediction_values_train_knn, test_diamonds$price)
+#        RMSE     Rsquared          MAE 
+#1049.7342230    0.9348145  550.5465499 
+```
+
+# ANN 
+
+```{r, cache = TRUE}
+# Change categorical variables into dummy variables
+train_ANN <- as.data.frame(model.matrix(~.-1, train_diamonds))
+test_ANN <- as.data.frame(model.matrix(~.-1,test_diamonds))
+
+normalize <- function(x) {
+  return ((x - min(x)) / (max(x) - min(x)))
+}
+train_ANN_norm <- as.data.frame(lapply(train_ANN[,-22] , normalize))
+train_ANN_norm$price <- train_ANN$price
+test_ANN_norm <- as.data.frame(lapply(test_ANN[,-22], normalize))
+test_ANN_norm$price <- test_ANN$price
+
+# # Model 1 (Baseline)
+# ANN_model1 <- neuralnet(formula = price ~ ., data = train_ANN_norm)
+# plot(ANN_model1)
+# prediction_values_ANN1 <- predict(ANN_model1, test_ANN_norm)
+# actual_vs_expected_diff_ANN1 <- test_ANN_norm$price - prediction_values_ANN1
+# postResample(prediction_values_ANN1, test_ANN_norm$price)
+# # RMSE     Rsquared          MAE 
+# # 4.008756e+03 1.095003e-06 3.039719e+03
+
+# Model 2 (Adding Nodes)
+ANN_model2 <- neuralnet(formula = price ~ ., data = train_ANN_norm, hidden = 3, stepmax = 1e8)
+plot(ANN_model2)
+prediction_values_ANN2 <- predict(ANN_model2, newdata = test_ANN_norm)
+actual_vs_expected_diff_ANN2 <- test_ANN_norm$price - prediction_values_ANN2
+postResample(prediction_values_ANN2, test_ANN_norm$price)
+#         RMSE     Rsquared          MAE
+# 4.008756e+03 2.494753e-06 3.039719e+03
+
+# # Model 3 (Adding Layers)
+# ANN_model3 <- neuralnet(formula = price ~ ., data = train_ANN_norm, hidden = c(2,3), threshold = 0.01, stepmax = 10^5)
+# plot(ANN_model3)
+# prediction_values_ANN3 <- predict(ANN_model3, test_ANN_norm)
+# actual_vs_expected_diff_ANN3 <- test_ANN_norm$price - prediction_values_ANN3
+# postResample(prediction_values_ANN3, test_ANN_norm$price)
+# #     RMSE Rsquared      MAE 
+# # 4008.756       NA 3039.719 
+
+
+
+```
+
+### SVM
+
+```{r, cache = TRUE}
+#SVM_model1 <- ksvm(price ~ ., data = train_diamonds, kernel = "tanhdot")
+#prediction_values_SVM1 <- predict(SVM_model1, test_diamonds)
+#postResample(prediction_values_SVM1, test_diamonds$price)
+#        RMSE     Rsquared          MAE 
+#1.465553e+07 3.214051e-03 1.203651e+07 
+
+SVM_model2 <- ksvm(price ~ ., data = train_diamonds, kernel = "laplacedot")
+prediction_values_SVM2 <- predict(SVM_model2, test_diamonds)
+postResample(prediction_values_SVM2, test_diamonds$price)
+#     RMSE  Rsquared       MAE 
+#689.49626   0.97049 353.32796 
+
+#SVM_model3 <- ksvm(price ~ ., data = train_diamonds, kernel = "besseldot")
+#prediction_values_SVM3 <- predict(SVM_model3, test_diamonds)
+#postResample(prediction_values_SVM3, test_diamonds$price)
+#        RMSE     Rsquared          MAE 
+# 2.776466e+04 2.860594e-02 1.291670e+04 
+
+```
+
+### Regression Tree
+
+Note: RMSE, Rsquared, and MAE values commented in code and typed out in this document may be different than output of code
+
+Info about regression trees: https://www.datadriveninvestor.com/2020/04/13/how-do-regression-trees-work/
+
+```{r, cache = TRUE}
+# Chosen regression tree:
+# One regression tree made with training data to predict price of testing data
+reg_tree_1 <- rpart(formula = price ~ ., data = train_diamonds)
+prediction_values_reg_tree1 <- predict(reg_tree_1, test_diamonds)
+summary(prediction_values_reg_tree1) # only positive prices predicted
+postResample(prediction_values_reg_tree1, test_diamonds$price)
+# RMSE = 1423.7770949
+# Rsquared = 0.8738465
+# MAE = 909.6853036
+```
+
+```{r, cache = TRUE}
+# Second regression tree
+
+# RMSE = 1423.7770949, Rsquared = 0.8738465, and MAE = 909.6853036
+# (gets same RMSE, Rsquared, and MAE as reg_tree_1)
+# and only positive prices predicted:
+#control_value = data.frame("minbucket" = 1000)
+
+# RMSE = 1423.7770949, Rsquared = 0.8738465, MAE = 909.6853036
+# (gets same RMSE, Rsquared, and MAE as reg_tree_1)
+# and only positive prices predicted:
+#control_value = data.frame("xval" = 100)
+
+# RMSE = 2509.0156262, Rsquared = 0.6082208, and MAE = 1733.6869289
+# and only positive prices predicted:
+#control_value = data.frame("maxdepth" = 1)
+
+# Choose this maxdepth to use for second regression tree:
+# RMSE = 1686.5011751, Rsquared = 0.8230183, and MAE = 1061.1619385
+# and only positive prices predicted:
+control_value = data.frame("maxdepth" = 2)
+
+# RMSE = 1423.7770949, Rsquared = 0.8738465, and MAE = 909.6853036
+# (gets same RMSE, Rsquared, and MAE as reg_tree_1)
+# and only positive prices predicted:
+#control_value = data.frame("maxdepth" = 3)
+
+# RMSE = 1423.7770949, Rsquared = 0.8738465, and MAE = 909.6853036
+# (gets same RMSE, Rsquared, and MAE as reg_tree_1)
+# and only positive prices predicted:
+#control_value = data.frame("maxdepth" = 4)
+
+# RMSE = 1423.7770949, Rsquared = 0.8589778, and MAE = 909.6853036
+# (gets same RMSE, Rsquared, and MAE as reg_tree_1)
+# and only positive prices predicted:
+#control_value = data.frame("maxdepth" = 5)
+
+# RMSE = 1423.7770949, Rsquared = 0.8589778, and MAE = 909.6853036
+# (gets same RMSE, Rsquared, and MAE as reg_tree_1)
+# and only positive prices predicted:
+#control_value = data.frame("maxdepth" = 10)
+
+reg_tree_2 <- rpart(formula = price ~ ., data = train_diamonds, control = control_value)
+prediction_values_reg_tree2 <- predict(reg_tree_2, test_diamonds)
+summary(prediction_values_reg_tree2)
+postResample(prediction_values_reg_tree2, test_diamonds$price)
+```
+
+The chosen regression tree is the one with default values for control from the rpart function and predicts price using all the predictor variables. This was chosen since it has the smallest RMSE and MAE values and the largest Rsquared value (and also had no extra parameters defined) compared to the other regression trees made. There were other regression trees which have the same RMSE, Rsquared, and MAE values; but those have an additional parameter defined, so the first regression tree was chosen with no extra parameter defined.
+
+### Random Forest
+
+Note: RMSE, Rsquared, and MAE commented in code and typed out in this document may be different than output of code
+
+#### One random forest made with training data to predict price of testing data using 10 trees
+
+```{r, cache = TRUE}
+# random_forest_model1 <- randomForest(price ~ ., data = train_diamonds, ntree = 10)
+# prediction_values_random_forest1 <- predict(random_forest_model1, test_diamonds)
+# summary(prediction_values_random_forest1) # only positive prices predicted
+# postResample(prediction_values_random_forest1, test_diamonds$price)
+# RMSE = 619.3511919
+# Rsquared = 0.9762443
+# MAE = 307.3949360
+```
+
+#### One random forest made with training data to predict price of testing data using 100 trees
+
+```{r, cache = TRUE}
+# random_forest_model2 <- randomForest(price ~ ., data = train_diamonds, ntree = 100)
+# prediction_values_random_forest2 <- predict(random_forest_model2, test_diamonds)
+# summary(prediction_values_random_forest2) # only positive prices predicted
+# postResample(prediction_values_random_forest2, test_diamonds$price)
+# RMSE = 583.5253041
+# Rsquared = 0.9789491
+# MAE = 286.7713278
+```
+
+#### One random forest made with training data to predict price of testing data using 500 trees
+
+```{r, cache = TRUE}
+# Chosen random forest:
+random_forest_model3 <- randomForest(price ~ ., data = train_diamonds)
+prediction_values_random_forest3 <- predict(random_forest_model3, test_diamonds)
+summary(prediction_values_random_forest3) # only positive prices predicted
+postResample(prediction_values_random_forest3, test_diamonds$price)
+# RMSE = 579.8030293
+# Rsquared = 0.9792354
+# MAE = 285.0036782
+```
+
+#### One random forest made with training data to predict price of testing data using 200 trees
+
+```{r, cache = TRUE}
+# random_forest_model4 <- randomForest(price ~ ., data = train_diamonds, ntree = 200)
+# prediction_values_random_forest4 <- predict(random_forest_model4, test_diamonds)
+# summary(prediction_values_random_forest4) # only positive prices predicted
+# postResample(prediction_values_random_forest4, test_diamonds$price)
+# RMSE = 581.1154823
+# Rsquared = 0.9791335
+# MAE = 285.5384704
+```
+
+#### One random forest made with training data to predict price of testing data using 50 trees
+
+```{r, cache = TRUE}
+# random_forest_model5 <- randomForest(price ~ ., data = train_diamonds, ntree = 50)
+# prediction_values_random_forest5 <- predict(random_forest_model5, test_diamonds)
+# summary(prediction_values_random_forest5) # only positive prices predicted
+# postResample(prediction_values_random_forest5, test_diamonds$price)
+# RMSE = 586.3089458
+# Rsquared = 0.9787419
+# MAE = 288.1146570
+```
+
+#### Testing number of predictor variables chosen for random forest
+
+method info for train function: https://topepo.github.io/caret/train-models-by-tag.html 
+Random forest info for train function: https://topepo.github.io/caret/train-models-by-tag.html#random-forest 
+
+```{r, cache = TRUE}
+# tune_grid_rf <- data.frame("mtry" = c(1:9)) # Test out number of predictor variables chosen
+# ctrl_rf <- trainControl(method = "cv", 10) # use 10-fold cross-validation
+# set.seed(12345)
+# random_forests <- train(price ~ ., data = diamonds, method = "rf", tuneGrid = tune_grid_rf, trControl = ctrl_rf, ntree = 10)
+# random_forests
+# RMSE = 646.2072, Rsquared = 0.9737722, MAE = 311.5486
+```
+
+The random forests with 100, 200, and 500 trees also has RMSE, Rsquared, and MAE values which are similar. The random forest with 500 trees was chosen since it has the smallest RMSE and MAE and the largest Rsquared value among the other random forests made.
+
+### Stacked Model
+```{r}
+stack_model <- data.frame(prediction_values_lm3, prediction_values_train_knn, prediction_values_ANN2, prediction_values_SVM2, prediction_values_reg_tree1, prediction_values_random_forest3, test_diamonds$price)
+summary(stack_model)
+str(stack_model)
+```
+
+## New Test and Train
+```{r}
+stack_test_set <- sample(1:nrow(stack_model), nrow(stack_model) * 0.3) 
+stack_train <- stack_model[-stack_test_set, ]
+stack_test <- stack_model[stack_test_set, ]
+```
+
+## Stacked Regression Tree
+```{r}
+stack_rt <- rpart(formula = test_diamonds.price ~ ., data = stack_train)
+stack_rt
+summary(stack_rt)
+stack_predictions_rt <- predict(stack_rt, stack_test)
+postResample(stack_predictions_rt, stack_test$test_diamonds.price)
+# RMSE = 899.9276686, Rsquared = 0.9487222, MAE = 566.5059942 
+```
+
+RMSE, Rsquared, and MAE for the chosen models and the stacked model:
+
+Linear regression:
+- RMSE = 1033.2668851
+- Rsquared = 0.9335579
+- MAE = 628.8434045 
+
+KNN regression:
+- RMSE = 1049.7342230
+- Rsquared = 0.9348145
+- MAE = 550.5465499
+
+SVM:
+- RMSE = 689.49626
+- Rsquared = 0.97049
+- MAE = 353.32796
+
+ANN:
+- RMSE = 4.008756e+03
+- Rsquared = 2.494753e-06
+- MAE = 3.039719e+03
+
+Regression Tree:
+- RMSE = 1423.7770949
+- Rsquared = 0.8738465
+- MAE = 909.6853036
+
+Random Forest:
+- RMSE = 579.8030293
+- Rsquared = 0.9792354
+- MAE = 285.0036782
+
+Stacked Regression Tree:
+- RMSE = 882.1945156
+- Rsquared = 0.9525313
+- MAE = 549.0019546 
+
+Comparing the RMSE, Rsquared, and MAE values for the chosen models and the stacked model, the random forest seems to be the best at predicting price since it has the smallest RMSE and MAE values and has the largest Rsquared value. The chosen random forest contains 500 trees.
