@@ -186,9 +186,9 @@ test_ANN_norm$price <- test_ANN$price
 # # 4.008756e+03 1.095003e-06 3.039719e+03
 
 # Model 2 (Adding Nodes)
-ANN_model2 <- neuralnet(formula = price ~ ., data = train_ANN_norm, hidden = 3, stepmax = 1e8)
+ANN_model2 <- neuralnet(formula = price ~ ., data = train_ANN_norm, hidden = 3)
 plot(ANN_model2)
-prediction_values_ANN2 <- predict(ANN_model2, newdata = test_ANN_norm)
+prediction_values_ANN2 <- predict(ANN_model2, test_ANN_norm)
 actual_vs_expected_diff_ANN2 <- test_ANN_norm$price - prediction_values_ANN2
 postResample(prediction_values_ANN2, test_ANN_norm$price)
 #         RMSE     Rsquared          MAE
