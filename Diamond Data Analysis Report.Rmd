@@ -128,6 +128,8 @@ postResample(prediction_values_lm3, test_diamonds$price)
 
 ```
 
+In order to create the best fitting linear regression model to predict price based on diamond characteristics, we first created the main effects model including all predictors, which had an RMSE of 1162.9890409, an R squared of 0.9158249 and MAE of 744.0980344. Next, we attempted to improve the model by assessing whether quadratic terms, log transformations, or interactions would help. When plotting the quantitative predictors against price, it appeared that the variable x had a quadratic relationship with price, so we added a quadratic term for this variable to the model. We also created histograms for the quantitative variables and found that the variable carat had a heavy right skew and may benefit from a log transformation. Additionally, we created some interaction plots, so by looking at these plots and just trying out different interactions in the model that intuitively made sense to us, we arrived at model 3. Model 3 has an RMSE of 1033.2668851, which is lower than the main effects model and other models we tried, an R squared of 0.9335579 which is higher than the main effects model and other models we tried, and an MAE of 744.0980344 which is lower than the main effects model and other models we tried. This model seems to best maximize all of these key metrics and do the best job at predicting price. 
+
 ### KNN Regression
 
 ```{r, cache = TRUE}
