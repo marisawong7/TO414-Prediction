@@ -395,7 +395,7 @@ Five random forests were created with varying amounts of trees to predict price 
 # Including ANN:
 # RMSE = 882.1945156
 # Rsquared = 0.9525313
-# MAE = 549.0019546 
+# MAE = 549.0019546
 #stack_model <- data.frame(prediction_values_lm3, prediction_values_train_knn, 
 #                          prediction_values_ANN2, prediction_values_SVM2, 
 #                          prediction_values_reg_tree1, 
