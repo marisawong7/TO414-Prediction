@@ -163,6 +163,9 @@ postResample(prediction_values_train_knn, test_diamonds$price)
 #1049.7342230    0.9348145  550.5465499 
 ```
 
+To build the KNN model, we start with a basic model with k-val = 5. Running this model, we get RMSE of 1037.3289972, Rsquared of 0.9343628, and MAE of 540.2361728. Then in order to improve the accuracy of our model, we use train control and expand grid to figure our the most efficient k-val, which is 9. With the best k-vel, we build a new knnreg model setting k = 9. Cansequently, we get an improvement in accuracy, with RMSE of 1049.7342230, Rsquared of 0.9348145, and MAE of 550.5465499. This is a balance of RMSE and Rsquared.
+
+
 # ANN 
 
 ```{r, cache = TRUE}
