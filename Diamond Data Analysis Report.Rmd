@@ -167,16 +167,16 @@ postResample(prediction_values_train_knn, test_diamonds$price)
 
 ```{r, cache = TRUE}
 # Change categorical variables into dummy variables
-train_ANN <- as.data.frame(model.matrix(~.-1, train_diamonds))
-test_ANN <- as.data.frame(model.matrix(~.-1,test_diamonds))
-
-normalize <- function(x) {
-  return ((x - min(x)) / (max(x) - min(x)))
-}
-train_ANN_norm <- as.data.frame(lapply(train_ANN[,-22] , normalize))
-train_ANN_norm$price <- train_ANN$price
-test_ANN_norm <- as.data.frame(lapply(test_ANN[,-22], normalize))
-test_ANN_norm$price <- test_ANN$price
+# train_ANN <- as.data.frame(model.matrix(~.-1, train_diamonds))
+# test_ANN <- as.data.frame(model.matrix(~.-1,test_diamonds))
+# 
+# normalize <- function(x) {
+#   return ((x - min(x)) / (max(x) - min(x)))
+# }
+# train_ANN_norm <- as.data.frame(lapply(train_ANN[,-22] , normalize))
+# train_ANN_norm$price <- train_ANN$price
+# test_ANN_norm <- as.data.frame(lapply(test_ANN[,-22], normalize))
+# test_ANN_norm$price <- test_ANN$price
 
 # # Model 1 (Baseline)
 # ANN_model1 <- neuralnet(formula = price ~ ., data = train_ANN_norm)
@@ -403,7 +403,7 @@ Five random forests were created with varying amounts of trees to predict price 
 
 # Not including ANN:
 stack_model <- data.frame(prediction_values_lm3, prediction_values_train_knn, 
-                          prediction_values_ANN2, prediction_values_SVM2, 
+                          prediction_values_SVM2, 
                           prediction_values_reg_tree1, 
                           prediction_values_random_forest3, test_diamonds$price)
 summary(stack_model)
@@ -424,7 +424,7 @@ stack_rt
 summary(stack_rt)
 stack_predictions_rt <- predict(stack_rt, stack_test)
 postResample(stack_predictions_rt, stack_test$test_diamonds.price)
-# RMSE = 899.9276686, Rsquared = 0.9487222, MAE = 566.5059942 
+# RMSE = 842.2472785, Rsquared = 0.9547393, MAE = 533.0487923
 ```
 
 RMSE, Rsquared, and MAE for the chosen models and the stacked model:
@@ -460,14 +460,13 @@ Random Forest:
 - MAE = 285.0036782
 
 Stacked Regression Tree:
-- RMSE = 
-- Rsquared = 
-- MAE = 
+- RMSE = 842.2472785
+- Rsquared = 0.9547393
+- MAE = 533.0487923
 
-Comparing the RMSE, Rsquared, and MAE values for the chosen models and the stacked model, the random forest seems to be the best at predicting price since it has the smallest RMSE and MAE values and has the largest Rsquared value. The chosen random forest contains 500 trees.
+Comparing the RMSE, Rsquared, and MAE values for the chosen models and the stacked model, the random forest seems to be the best at predicting price since it has the smallest RMSE and MAE values and has the largest Rsquared value. The chosen random forest contains 500 trees. However, using the stacked regression tree can be more robust since it takes in features from a multitude of model type. Therefore, the final chosen model will be the stacked regression tree which uses the predicted values from the chosen linear regression, KNN regression, SVM, regression tree, and random forest. The stacked regression tree has an RMSE of 842.2472785, Rsqaured of 0.9547393, and an MAE value of 533.0487923. This model does do a good job at predicting price based on the characteristics of diamonds. By doing this analysis, we are able to find a model which a seller of diamonds could use to price their inventory of diamonds. This results in potentially fairer prices since the pricing is based on the diamond's characteristics and how those characteristics impact price. By using this model to price one's diamonds for sale, the fair prices benefit both the seller (since they are not underpricing) and the buyer (since they are getting a fair price).
 
-
-### Stacked Model
+### Trying Out Some More Stacked Models
 ```{r}
 # Not including random forest
 # RMSE = 803.7886818, Rsquared = 0.9607508, MAE = 514.3504604
