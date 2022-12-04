@@ -186,13 +186,19 @@ test_ANN_norm$price <- test_ANN$price
 # # 4.008756e+03 1.095003e-06 3.039719e+03
 
 # Model 2 (Adding Nodes)
-ANN_model2 <- neuralnet(formula = price ~ ., data = train_ANN_norm, hidden = 3)
-plot(ANN_model2)
-prediction_values_ANN2 <- predict(ANN_model2, test_ANN_norm)
-actual_vs_expected_diff_ANN2 <- test_ANN_norm$price - prediction_values_ANN2
-postResample(prediction_values_ANN2, test_ANN_norm$price)
+# set.seed(12345)
+# library(neuralnet)
+# ANN_model2 <- neuralnet(formula = price ~ ., data = train_ANN_norm)
+# model4 <- train(price ~ x + y + z + carat, data = train_ANN_norm, method = "neuralnet")
+# model4 <- train(price ~ x + y + z + carat, data = train_ANN_norm, method = "neuralnet")
+# model3 <- lm(formula = price ~ x + y + z + carat, data = train_ANN_norm)
+# plot(ANN_model2)
+# prediction_values_ANN2 <- predict(ANN_model2, test_ANN_norm)
+# actual_vs_expected_diff_ANN2 <- test_ANN_norm$price - prediction_values_ANN2
+# postResample(prediction_values_ANN2, test_ANN_norm$price)
 #         RMSE     Rsquared          MAE
 # 4.008756e+03 2.494753e-06 3.039719e+03
+
 
 # # Model 3 (Adding Layers)
 # ANN_model3 <- neuralnet(formula = price ~ ., data = train_ANN_norm, hidden = c(2,3), threshold = 0.01, stepmax = 10^5)
@@ -248,6 +254,8 @@ postResample(prediction_values_reg_tree1, test_diamonds$price)
 # MAE = 909.6853036
 ```
 
+A regression tree to predict price using all predictor variables which has an RMSE of 1423.7770949, Rsqaured of 0.8738465, and an MAE of 909.6853036.
+
 ```{r, cache = TRUE}
 # Second regression tree
 
@@ -296,7 +304,7 @@ summary(prediction_values_reg_tree2)
 postResample(prediction_values_reg_tree2, test_diamonds$price)
 ```
 
-The chosen regression tree is the one with default values for control from the rpart function and predicts price using all the predictor variables. This was chosen since it has the smallest RMSE and MAE values and the largest Rsquared value (and also had no extra parameters defined) compared to the other regression trees made. There were other regression trees which have the same RMSE, Rsquared, and MAE values; but those have an additional parameter defined, so the first regression tree was chosen with no extra parameter defined.
+Regression trees were also fit with customizing model parameters predicting price using all the variables. In the models tested, either the value of "minbucket" was changed, the xval was changed, or the maxdepth was changed. Using a maxdepth of 2 provided the second best RMSE, Rsquared, and MAE values of all regression trees made. This regression tree has a RMSE of 1686.5011751, Rsquared of 0.8230183, and MAE of 1061.1619385. However, this best model was still not as good as the standard regression tree. The chosen regression tree is the one with default values for control from the rpart function and predicts price using all the predictor variables. This was chosen since it has the smallest RMSE and MAE values and the largest Rsquared value (and also had no extra parameters defined) compared to the other regression trees made. There were other regression trees which have the same RMSE, Rsquared, and MAE values; but those have an additional parameter defined, so the first regression tree was chosen as the one with no extra parameter defined. The chosen regression tree (and all the other regression trees made) only predicts positive price values when used on to predict on the testing data.
 
 ### Random Forest
 
@@ -374,14 +382,28 @@ Random forest info for train function: https://topepo.github.io/caret/train-mode
 # set.seed(12345)
 # random_forests <- train(price ~ ., data = diamonds, method = "rf", tuneGrid = tune_grid_rf, trControl = ctrl_rf, ntree = 10)
 # random_forests
-# RMSE = 646.2072, Rsquared = 0.9737722, MAE = 311.5486
+# mtry = 9 was chosen based on RMSE
+# mtry = 9 has RMSE = 646.2072, Rsquared = 0.9737722, MAE = 311.5486
 ```
 
-The random forests with 100, 200, and 500 trees also has RMSE, Rsquared, and MAE values which are similar. The random forest with 500 trees was chosen since it has the smallest RMSE and MAE and the largest Rsquared value among the other random forests made.
+Five random forests were created with varying amounts of trees to predict price using all predictor variables. 10, 100, 500, 200, and 50 trees were used. The random forest with 500 trees had the best RMSE, Rsquared, and MAE values among the other random forest models. The random forests with 100, 200, and 500 trees also has RMSE, Rsquared, and MAE values which are similar. In addition, the train function was used to test out the number of predictor variables chosen with 10-fold cross-validation. The chosen number of predictors to include is 9 since it has the lowest RMSE (it also has the lowest MAE and highest Rsquared value as well). The random forest with 500 trees was chosen since it has the smallest RMSE and MAE and the largest Rsquared value among the other random forests made. In addition, for the chosen model (as well as the other random forests created with different tree values), only positive price values are predicted for the testing data.
 
 ### Stacked Model
 ```{r}
-stack_model <- data.frame(prediction_values_lm3, prediction_values_train_knn, prediction_values_ANN2, prediction_values_SVM2, prediction_values_reg_tree1, prediction_values_random_forest3, test_diamonds$price)
+# Including ANN:
+# RMSE = 882.1945156
+# Rsquared = 0.9525313
+# MAE = 549.0019546 
+#stack_model <- data.frame(prediction_values_lm3, prediction_values_train_knn, 
+#                          prediction_values_ANN2, prediction_values_SVM2, 
+#                          prediction_values_reg_tree1, 
+#                          prediction_values_random_forest3, test_diamonds$price)
+
+# Not including ANN:
+stack_model <- data.frame(prediction_values_lm3, prediction_values_train_knn, 
+                          prediction_values_ANN2, prediction_values_SVM2, 
+                          prediction_values_reg_tree1, 
+                          prediction_values_random_forest3, test_diamonds$price)
 summary(stack_model)
 str(stack_model)
 ```
@@ -436,8 +458,43 @@ Random Forest:
 - MAE = 285.0036782
 
 Stacked Regression Tree:
-- RMSE = 882.1945156
-- Rsquared = 0.9525313
-- MAE = 549.0019546 
+- RMSE = 
+- Rsquared = 
+- MAE = 
 
 Comparing the RMSE, Rsquared, and MAE values for the chosen models and the stacked model, the random forest seems to be the best at predicting price since it has the smallest RMSE and MAE values and has the largest Rsquared value. The chosen random forest contains 500 trees.
+
+
+### Stacked Model
+```{r}
+# Not including random forest
+# RMSE = 803.7886818, Rsquared = 0.9607508, MAE = 514.3504604
+#stack_model_2 <- data.frame(prediction_values_lm3, prediction_values_train_knn,
+#                            prediction_values_ANN2, prediction_values_SVM2,
+#                            prediction_values_reg_tree1, test_diamonds$price)
+
+
+# Not including random forest and not including ANN
+# RMSE = 952.5851637, Rsquared = 0.9431477, MAE = 596.7643558 
+# stack_model_2 <- data.frame(prediction_values_lm3, prediction_values_train_knn,
+#                             prediction_values_SVM2,
+#                             prediction_values_reg_tree1, test_diamonds$price)
+# summary(stack_model_2)
+# str(stack_model_2)
+```
+
+## New Test and Train
+```{r}
+# stack_test_set_2 <- sample(1:nrow(stack_model_2), nrow(stack_model_2) * 0.3) 
+# stack_train_2 <- stack_model[-stack_test_set_2, ]
+# stack_test_2 <- stack_model[stack_test_set_2, ]
+```
+
+## Stacked Regression Tree
+```{r}
+# stack_rt_2 <- rpart(formula = test_diamonds.price ~ ., data = stack_train_2)
+# stack_rt_2
+# summary(stack_rt_2)
+# stack_predictions_rt_2 <- predict(stack_rt_2, stack_test_2)
+# postResample(stack_predictions_rt_2, stack_test_2$test_diamonds.price)
+```
