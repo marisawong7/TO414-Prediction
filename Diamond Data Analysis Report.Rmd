@@ -8,7 +8,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Intermediate Deliverable for TO 414 Group Project 2
+Note: RMSE, Rsquared, and MAE commented in code and typed out in this document may be different than output of code
 
 ### Load Libraries
 
@@ -234,8 +234,6 @@ To identify the best model, we tried running different kernels like tanhdot, lap
 
 ### Regression Tree
 
-Note: RMSE, Rsquared, and MAE values commented in code and typed out in this document may be different than output of code
-
 Info about regression trees: https://www.datadriveninvestor.com/2020/04/13/how-do-regression-trees-work/
 
 ```{r, cache = TRUE}
@@ -303,8 +301,6 @@ postResample(prediction_values_reg_tree2, test_diamonds$price)
 Regression trees were also fit with customizing model parameters predicting price using all the variables. In the models tested, either the value of "minbucket" was changed, the xval was changed, or the maxdepth was changed. Using a maxdepth of 2 provided the second best RMSE, Rsquared, and MAE values of all regression trees made. This regression tree has a RMSE of 1686.5011751, Rsquared of 0.8230183, and MAE of 1061.1619385. However, this best model was still not as good as the standard regression tree. The chosen regression tree is the one with default values for control from the rpart function and predicts price using all the predictor variables. This was chosen since it has the smallest RMSE and MAE values and the largest Rsquared value (and also had no extra parameters defined) compared to the other regression trees made. There were other regression trees which have the same RMSE, Rsquared, and MAE values; but those have an additional parameter defined, so the first regression tree was chosen as the one with no extra parameter defined. The chosen regression tree (and all the other regression trees made) only predicts positive price values when used on to predict on the testing data.
 
 ### Random Forest
-
-Note: RMSE, Rsquared, and MAE commented in code and typed out in this document may be different than output of code
 
 #### One random forest made with training data to predict price of testing data using 10 trees
 
@@ -459,37 +455,3 @@ Stacked Regression Tree:
 - MAE = 533.0487923
 
 Comparing the RMSE, Rsquared, and MAE values for the chosen models and the stacked model, the random forest seems to be the best at predicting price since it has the smallest RMSE and MAE values and has the largest Rsquared value. The chosen random forest contains 500 trees. However, using the stacked regression tree can be more robust since it takes in features from a multitude of model type. Therefore, the final chosen model will be the stacked regression tree which uses the predicted values from the chosen linear regression, KNN regression, SVM, regression tree, and random forest. The stacked regression tree has an RMSE of 842.2472785, Rsquared of 0.9547393, and an MAE value of 533.0487923. This model does do a good job at predicting price based on the characteristics of diamonds. By doing this analysis, we are able to find a model which a seller of diamonds could use to price their inventory of diamonds. This results in potentially fairer prices since the pricing is based on the diamond's characteristics and how those characteristics impact price. By using this model to price one's diamonds for sale, the fair prices benefit both the seller (since they are not underpricing) and the buyer (since they are getting a fair price).
-
-### Trying Out Some More Stacked Models
-```{r}
-# Not including random forest
-# RMSE = 803.7886818, Rsquared = 0.9607508, MAE = 514.3504604
-#stack_model_2 <- data.frame(prediction_values_lm2, prediction_values_train_knn,
-#                            prediction_values_ANN2, prediction_values_SVM2,
-#                            prediction_values_reg_tree1, test_diamonds$price)
-
-
-# Not including random forest and not including ANN
-# RMSE = 952.5851637, Rsquared = 0.9431477, MAE = 596.7643558 
-# stack_model_2 <- data.frame(prediction_values_lm2, prediction_values_train_knn,
-#                             prediction_values_SVM2,
-#                             prediction_values_reg_tree1, test_diamonds$price)
-# summary(stack_model_2)
-# str(stack_model_2)
-```
-
-## New Test and Train
-```{r}
-# stack_test_set_2 <- sample(1:nrow(stack_model_2), nrow(stack_model_2) * 0.3) 
-# stack_train_2 <- stack_model[-stack_test_set_2, ]
-# stack_test_2 <- stack_model[stack_test_set_2, ]
-```
-
-## Stacked Regression Tree
-```{r}
-# stack_rt_2 <- rpart(formula = test_diamonds.price ~ ., data = stack_train_2)
-# stack_rt_2
-# summary(stack_rt_2)
-# stack_predictions_rt_2 <- predict(stack_rt_2, stack_test_2)
-# postResample(stack_predictions_rt_2, stack_test_2$test_diamonds.price)
-```
