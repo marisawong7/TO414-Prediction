@@ -1,0 +1,42 @@
+---
+title: "Some Stacked Models"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Trying Out Some More Stacked Models
+```{r}
+# Not including random forest
+# RMSE = 803.7886818, Rsquared = 0.9607508, MAE = 514.3504604
+#stack_model_2 <- data.frame(prediction_values_lm2, prediction_values_train_knn,
+#                            prediction_values_ANN2, prediction_values_SVM2,
+#                            prediction_values_reg_tree1, test_diamonds$price)
+
+
+# Not including random forest and not including ANN
+# RMSE = 952.5851637, Rsquared = 0.9431477, MAE = 596.7643558 
+# stack_model_2 <- data.frame(prediction_values_lm2, prediction_values_train_knn,
+#                             prediction_values_SVM2,
+#                             prediction_values_reg_tree1, test_diamonds$price)
+# summary(stack_model_2)
+# str(stack_model_2)
+```
+
+## New Test and Train
+```{r}
+# stack_test_set_2 <- sample(1:nrow(stack_model_2), nrow(stack_model_2) * 0.3) 
+# stack_train_2 <- stack_model[-stack_test_set_2, ]
+# stack_test_2 <- stack_model[stack_test_set_2, ]
+```
+
+## Stacked Regression Tree
+```{r}
+# stack_rt_2 <- rpart(formula = test_diamonds.price ~ ., data = stack_train_2)
+# stack_rt_2
+# summary(stack_rt_2)
+# stack_predictions_rt_2 <- predict(stack_rt_2, stack_test_2)
+# postResample(stack_predictions_rt_2, stack_test_2$test_diamonds.price)
+```

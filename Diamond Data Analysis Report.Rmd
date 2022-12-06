@@ -175,7 +175,6 @@ To build the KNN model, we start with a basic model with k-val = 5. Running this
 # ANN_model1 <- neuralnet(formula = price ~ ., data = train_ANN_norm)
 # plot(ANN_model1)
 # prediction_values_ANN1 <- predict(ANN_model1, test_ANN_norm)
-# actual_vs_expected_diff_ANN1 <- test_ANN_norm$price - prediction_values_ANN1
 # postResample(prediction_values_ANN1, test_ANN_norm$price)
 # # RMSE     Rsquared          MAE 
 # # 4.008756e+03 1.095003e-06 3.039719e+03
@@ -189,7 +188,6 @@ To build the KNN model, we start with a basic model with k-val = 5. Running this
 # model3 <- lm(formula = price ~ x + y + z + carat, data = train_ANN_norm)
 # plot(ANN_model2)
 # prediction_values_ANN2 <- predict(ANN_model2, test_ANN_norm)
-# actual_vs_expected_diff_ANN2 <- test_ANN_norm$price - prediction_values_ANN2
 # postResample(prediction_values_ANN2, test_ANN_norm$price)
 #         RMSE     Rsquared          MAE
 # 4.008756e+03 2.494753e-06 3.039719e+03
@@ -199,12 +197,9 @@ To build the KNN model, we start with a basic model with k-val = 5. Running this
 # ANN_model3 <- neuralnet(formula = price ~ ., data = train_ANN_norm, hidden = c(2,3), threshold = 0.01, stepmax = 10^5)
 # plot(ANN_model3)
 # prediction_values_ANN3 <- predict(ANN_model3, test_ANN_norm)
-# actual_vs_expected_diff_ANN3 <- test_ANN_norm$price - prediction_values_ANN3
 # postResample(prediction_values_ANN3, test_ANN_norm$price)
 # #     RMSE Rsquared      MAE 
 # # 4008.756       NA 3039.719 
-
-
 
 ```
 
@@ -463,7 +458,7 @@ Stacked Regression Tree:
 - Rsquared = 0.9547393
 - MAE = 533.0487923
 
-Comparing the RMSE, Rsquared, and MAE values for the chosen models and the stacked model, the random forest seems to be the best at predicting price since it has the smallest RMSE and MAE values and has the largest Rsquared value. The chosen random forest contains 500 trees. However, using the stacked regression tree can be more robust since it takes in features from a multitude of model type. Therefore, the final chosen model will be the stacked regression tree which uses the predicted values from the chosen linear regression, KNN regression, SVM, regression tree, and random forest. The stacked regression tree has an RMSE of 842.2472785, Rsqaured of 0.9547393, and an MAE value of 533.0487923. This model does do a good job at predicting price based on the characteristics of diamonds. By doing this analysis, we are able to find a model which a seller of diamonds could use to price their inventory of diamonds. This results in potentially fairer prices since the pricing is based on the diamond's characteristics and how those characteristics impact price. By using this model to price one's diamonds for sale, the fair prices benefit both the seller (since they are not underpricing) and the buyer (since they are getting a fair price).
+Comparing the RMSE, Rsquared, and MAE values for the chosen models and the stacked model, the random forest seems to be the best at predicting price since it has the smallest RMSE and MAE values and has the largest Rsquared value. The chosen random forest contains 500 trees. However, using the stacked regression tree can be more robust since it takes in features from a multitude of model type. Therefore, the final chosen model will be the stacked regression tree which uses the predicted values from the chosen linear regression, KNN regression, SVM, regression tree, and random forest. The stacked regression tree has an RMSE of 842.2472785, Rsquared of 0.9547393, and an MAE value of 533.0487923. This model does do a good job at predicting price based on the characteristics of diamonds. By doing this analysis, we are able to find a model which a seller of diamonds could use to price their inventory of diamonds. This results in potentially fairer prices since the pricing is based on the diamond's characteristics and how those characteristics impact price. By using this model to price one's diamonds for sale, the fair prices benefit both the seller (since they are not underpricing) and the buyer (since they are getting a fair price).
 
 ### Trying Out Some More Stacked Models
 ```{r}
