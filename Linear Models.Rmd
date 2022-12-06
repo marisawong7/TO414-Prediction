@@ -66,6 +66,7 @@ summary(test_diamonds)
 
 ```{r}
 plot( ~ price + carat + depth + table + x + y + z, data = train_diamonds)
+#quadtraic relationship between x and price
 
 hist(train_diamonds$price)
 hist(train_diamonds$carat)
@@ -74,6 +75,37 @@ hist(train_diamonds$table)
 hist(train_diamonds$x)
 hist(train_diamonds$y)
 hist(train_diamonds$z)
+# carat has a heavy right skew
+
+library(ggplot2)
+library(jtools)
+library(interactions)
+fit1 <- lm(price ~ carat * cut, data = train_diamonds)
+interact_plot(fit1, pred = carat, modx = cut)
+#interaction not necessary
+fit2 <- lm(price ~ cut * depth, data = train_diamonds)
+interact_plot(fit2, pred = cut, modx = depth)
+fit3 <- lm(price ~ x * carat, data = train_diamonds)
+interact_plot(fit3, pred = x, modx = carat)
+# interaction not necessary
+fit4 <- lm(price ~ z * carat, data = train_diamonds)
+interact_plot(fit4, pred = z, modx = carat)
+# interaction not necessary
+fit5 <- lm(price ~ x * depth, data = train_diamonds)
+interact_plot(fit5, pred = x, modx = depth)
+# interaction not necessary
+fit6 <- lm(price ~ z * depth, data = train_diamonds)
+interact_plot(fit6, pred = z, modx = depth)
+# interaction not necessary
+fit7 <- lm(price ~ x * cut, data = train_diamonds)
+interact_plot(fit7, pred = x, modx = cut)
+# interaction not necessary
+fit8 <- lm(price ~ z * cut, data = train_diamonds)
+interact_plot(fit8, pred = z, modx = cut)
+# interaction not necessary
+fit9 <- lm(price ~ depth * carat, data = train_diamonds)
+interact_plot(fit9, pred = depth, modx = carat)
+# interaction necessary
 
 
 # Main effects model
@@ -102,15 +134,13 @@ postResample(prediction_values_lm2, test_diamonds$price)
 # 5.781 mean difference
 
 # Interactions
-model3 <- lm(price ~ clarity + color + cut + log(carat) + depth + table + x + z + x*z + clarity*cut + clarity*color + color*cut + depth*cut + I(x^2), train_diamonds)
+model3 <- lm(price ~ clarity + color + cut + log(carat) + depth + table + x + z + clarity*cut + clarity*color + color*cut + carat*color + depth*cut + depth*color + x*depth + z*depth + I(x^2), train_diamonds)
 summary(model3)
 prediction_values_lm3 <- predict(model3, test_diamonds)
 summary(prediction_values_lm3)
-actual_vs_expected_diff_lm3 <- test_diamonds$price - prediction_values_lm3
-summary(actual_vs_expected_diff_lm3)
 postResample(prediction_values_lm3, test_diamonds$price)
 #  RMSE     Rsquared          MAE 
-# 1128.9298904    0.9206839  715.1531242 
+# 1033.2668851    0.9335579  628.8434045 
 # 7.857 mean difference
 
 #Train
@@ -132,3 +162,4 @@ summary(actual_vs_expected_diff_lm4)
 # 5.862 mean difference 
 ```
 
+In order to create the best fitting linear regression model to predict price based on diamond characteristics, we first created the main effects model including all predictors, which had an RMSE of 1162.9890409, an R squared of 0.9158249 and MAE of 744.0980344. Next, we attempted to improve the model by assessing whether quadratic terms, log transformations, or interactions would help. When plotting the quantitative predictors against price, it appeared that the variable x had a quadratic relationship with price, so we added a quadratic term for this variable to the model. We also created histograms for the quantitative variables and found that the variable carat had a heavy right skew and may benefit from a log transformation. Additionally, we created some interaction plots, so by looking at these plots and just trying out different interactions in the model that intuitively made sense to us, we arrived at model 3. Model 3 has an RMSE of 1033.2668851, which is lower than the main effects model and other models we tried, an R squared of 0.9335579 which is higher than the main effects model and other models we tried, and an MAE of 744.0980344 which is lower than the main effects model and other models we tried. This model seems to best maximize all of these key metrics and do the best job at predicting price. 
