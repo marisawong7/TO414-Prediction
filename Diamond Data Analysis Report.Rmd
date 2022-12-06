@@ -245,6 +245,8 @@ postResample(prediction_values_SVM2, test_diamonds$price)
 
 ```
 
+To identify the best model, we tried running different kernels like tanhdot, laplacedot, and besseldot. Then, we selected the model with the kernel that had the lowest RMSE, highest r squared, and lowest MAE.  The best model was using the laplacedot kernel with a RMSE of 689.49626, R squared or 0.97049, and MAE of 353.32796. 
+
 ### Regression Tree
 
 Note: RMSE, Rsquared, and MAE values commented in code and typed out in this document may be different than output of code
