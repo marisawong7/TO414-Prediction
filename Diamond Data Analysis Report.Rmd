@@ -218,6 +218,10 @@ To build the KNN model, we start with a basic model with k-val = 5. Running this
 
 ```
 
+
+To build the ANN model,  all the categorical variables are broken into dummy variables and then normalized, except for the response variable (`price`). A baseline model was performed at first, and then we improved the model based on it by adding nodes and layers. However, all three models showed extremely small values of indications and only predicted one variable, which possibly resulted from the specific structure of the data. Therefore, we decided to comment out the ANN model and exclude it from the stacked model.
+
+
 ### SVM
 
 ```{r, cache = TRUE}
@@ -240,6 +244,8 @@ postResample(prediction_values_SVM2, test_diamonds$price)
 # 2.776466e+04 2.860594e-02 1.291670e+04 
 
 ```
+
+To identify the best model, we tried running different kernels like tanhdot, laplacedot, and besseldot. Then, we selected the model with the kernel that had the lowest RMSE, highest r squared, and lowest MAE.  The best model was using the laplacedot kernel with a RMSE of 689.49626, R squared or 0.97049, and MAE of 353.32796. 
 
 ### Regression Tree
 
