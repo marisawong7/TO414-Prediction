@@ -185,7 +185,6 @@ To build the KNN model, we start with a basic model with k-val = 5. Running this
 # ANN_model1 <- neuralnet(formula = price ~ ., data = train_ANN_norm)
 # plot(ANN_model1)
 # prediction_values_ANN1 <- predict(ANN_model1, test_ANN_norm)
-# actual_vs_expected_diff_ANN1 <- test_ANN_norm$price - prediction_values_ANN1
 # postResample(prediction_values_ANN1, test_ANN_norm$price)
 # # RMSE     Rsquared          MAE 
 # # 4.008756e+03 1.095003e-06 3.039719e+03
@@ -199,7 +198,6 @@ To build the KNN model, we start with a basic model with k-val = 5. Running this
 # model3 <- lm(formula = price ~ x + y + z + carat, data = train_ANN_norm)
 # plot(ANN_model2)
 # prediction_values_ANN2 <- predict(ANN_model2, test_ANN_norm)
-# actual_vs_expected_diff_ANN2 <- test_ANN_norm$price - prediction_values_ANN2
 # postResample(prediction_values_ANN2, test_ANN_norm$price)
 #         RMSE     Rsquared          MAE
 # 4.008756e+03 2.494753e-06 3.039719e+03
@@ -209,12 +207,9 @@ To build the KNN model, we start with a basic model with k-val = 5. Running this
 # ANN_model3 <- neuralnet(formula = price ~ ., data = train_ANN_norm, hidden = c(2,3), threshold = 0.01, stepmax = 10^5)
 # plot(ANN_model3)
 # prediction_values_ANN3 <- predict(ANN_model3, test_ANN_norm)
-# actual_vs_expected_diff_ANN3 <- test_ANN_norm$price - prediction_values_ANN3
 # postResample(prediction_values_ANN3, test_ANN_norm$price)
 # #     RMSE Rsquared      MAE 
 # # 4008.756       NA 3039.719 
-
-
 
 ```
 
