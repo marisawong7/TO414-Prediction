@@ -204,7 +204,7 @@ To build the KNN model, we start with a basic model with k-val = 5. Running this
 ```
 
 
-To build the ANN model,  all the categorical variables are broken into dummy variables and then normalized, except for the response variable (`price`). A baseline model was performed at first, and then we improved the model based on it by adding nodes and layers. However, all three models showed extremely small values of indications and only predicted one variable, which possibly resulted from the specific structure of the data. Therefore, we decided to comment out the ANN model and exclude it from the stacked model.
+To build the ANN model, all the categorical variables are broken into dummy variables and then normalized, except for the response variable (`price`). A baseline model was performed at first, and then we improved the model based on it by adding nodes and layers. However, all three models showed extremely small values of indications and only predicted one variable, which possibly resulted from the specific structure of the data. Therefore, we decided to comment out the ANN model and exclude it from the stacked model. We also discussed this issue with the professor.
 
 
 ### SVM
