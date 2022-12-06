@@ -108,17 +108,17 @@ postResample(prediction_values_lm1, test_diamonds$price)
 
 
 # Improved Model
-model3 <- lm(price ~ clarity + color + cut + log(carat) + depth + table + x + z + clarity*cut + clarity*color + color*cut + carat*color + depth*cut + depth*color + x*depth + z*depth + I(x^2), train_diamonds)
-summary(model3)
-prediction_values_lm3 <- predict(model3, test_diamonds)
-summary(prediction_values_lm3)
-postResample(prediction_values_lm3, test_diamonds$price)
+model2 <- lm(price ~ clarity + color + cut + log(carat) + depth + table + x + z + clarity*cut + clarity*color + color*cut + carat*color + depth*cut + depth*color + x*depth + z*depth + I(x^2), train_diamonds)
+summary(model2)
+prediction_values_lm2 <- predict(model2, test_diamonds)
+summary(prediction_values_lm2)
+postResample(prediction_values_lm2, test_diamonds$price)
 #  RMSE     Rsquared          MAE 
 # 1033.2668851    0.9335579  628.8434045 
 
 ```
 
-In order to create the best fitting linear regression model to predict price based on diamond characteristics, we first created the main effects model including all predictors, which had an RMSE of 1162.9890409, an R squared of 0.9158249 and MAE of 744.0980344. Next, we attempted to improve the model by assessing whether quadratic terms, log transformations, or interactions would help. When plotting the quantitative predictors against price, it appeared that the variable x had a quadratic relationship with price, so we added a quadratic term for this variable to the model. We also created histograms for the quantitative variables and found that the variable carat had a heavy right skew and may benefit from a log transformation. Additionally, we created some interaction plots, so by looking at these plots and just trying out different interactions in the model that intuitively made sense to us, we arrived at model 3. Model 3 has an RMSE of 1033.2668851, which is lower than the main effects model and other models we tried, an R squared of 0.9335579 which is higher than the main effects model and other models we tried, and an MAE of 744.0980344 which is lower than the main effects model and other models we tried. This model seems to best maximize all of these key metrics and do the best job at predicting price. 
+In order to create the best fitting linear regression model to predict price based on diamond characteristics, we first created the main effects model including all predictors, which had an RMSE of 1162.9890409, an R squared of 0.9158249 and MAE of 744.0980344. Next, we attempted to improve the model by assessing whether quadratic terms, log transformations, or interactions would help. When plotting the quantitative predictors against price, it appeared that the variable x has a quadratic relationship with price, so we added a quadratic term for this variable to the model. We also created histograms for the quantitative variables and found that the variable carat has a heavy right skew and may benefit from a log transformation. Additionally, we created some interaction plots, so by looking at these plots and just trying out different interactions in the model that intuitively made sense to us, we arrived at model 2. Model 2 has an RMSE of 1033.2668851, which is lower than the main effects model and other models we tried, an R squared of 0.9335579 which is higher than the main effects model and other models we tried, and an MAE of 744.0980344 which is lower than the main effects model and other models we tried. This model seems to best maximize all of these key metrics and do the best job at predicting price. 
 
 ### KNN Regression
 
@@ -395,13 +395,13 @@ Five random forests were created with varying amounts of trees to predict price 
 # RMSE = 882.1945156
 # Rsquared = 0.9525313
 # MAE = 549.0019546
-#stack_model <- data.frame(prediction_values_lm3, prediction_values_train_knn, 
+#stack_model <- data.frame(prediction_values_lm2, prediction_values_train_knn, 
 #                          prediction_values_ANN2, prediction_values_SVM2, 
 #                          prediction_values_reg_tree1, 
 #                          prediction_values_random_forest3, test_diamonds$price)
 
 # Not including ANN:
-stack_model <- data.frame(prediction_values_lm3, prediction_values_train_knn, 
+stack_model <- data.frame(prediction_values_lm2, prediction_values_train_knn, 
                           prediction_values_SVM2, 
                           prediction_values_reg_tree1, 
                           prediction_values_random_forest3, test_diamonds$price)
@@ -469,14 +469,14 @@ Comparing the RMSE, Rsquared, and MAE values for the chosen models and the stack
 ```{r}
 # Not including random forest
 # RMSE = 803.7886818, Rsquared = 0.9607508, MAE = 514.3504604
-#stack_model_2 <- data.frame(prediction_values_lm3, prediction_values_train_knn,
+#stack_model_2 <- data.frame(prediction_values_lm2, prediction_values_train_knn,
 #                            prediction_values_ANN2, prediction_values_SVM2,
 #                            prediction_values_reg_tree1, test_diamonds$price)
 
 
 # Not including random forest and not including ANN
 # RMSE = 952.5851637, Rsquared = 0.9431477, MAE = 596.7643558 
-# stack_model_2 <- data.frame(prediction_values_lm3, prediction_values_train_knn,
+# stack_model_2 <- data.frame(prediction_values_lm2, prediction_values_train_knn,
 #                             prediction_values_SVM2,
 #                             prediction_values_reg_tree1, test_diamonds$price)
 # summary(stack_model_2)
