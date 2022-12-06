@@ -19,6 +19,8 @@ library(neuralnet)
 library(rpart)
 library(kernlab)
 library(randomForest)
+library(jtools)
+library(interactions)
 ```
 
 ### Load in Data
@@ -97,6 +99,33 @@ hist(train_diamonds$y)
 hist(train_diamonds$z)
 # carat has a heavy right skew
 
+fit1 <- lm(price ~ carat * cut, data = train_diamonds)
+interact_plot(fit1, pred = carat, modx = cut)
+#interaction not necessary
+fit2 <- lm(price ~ cut * depth, data = train_diamonds)
+interact_plot(fit2, pred = cut, modx = depth)
+fit3 <- lm(price ~ x * carat, data = train_diamonds)
+interact_plot(fit3, pred = x, modx = carat)
+# interaction not necessary
+fit4 <- lm(price ~ z * carat, data = train_diamonds)
+interact_plot(fit4, pred = z, modx = carat)
+# interaction not necessary
+fit5 <- lm(price ~ x * depth, data = train_diamonds)
+interact_plot(fit5, pred = x, modx = depth)
+# interaction not necessary
+fit6 <- lm(price ~ z * depth, data = train_diamonds)
+interact_plot(fit6, pred = z, modx = depth)
+# interaction not necessary
+fit7 <- lm(price ~ x * cut, data = train_diamonds)
+interact_plot(fit7, pred = x, modx = cut)
+# interaction not necessary
+fit8 <- lm(price ~ z * cut, data = train_diamonds)
+interact_plot(fit8, pred = z, modx = cut)
+# interaction not necessary
+fit9 <- lm(price ~ depth * carat, data = train_diamonds)
+interact_plot(fit9, pred = depth, modx = carat)
+# interaction necessary
+
 
 # Main effects model
 model1 <- lm(price ~ ., train_diamonds)
@@ -107,17 +136,8 @@ postResample(prediction_values_lm1, test_diamonds$price)
 #       RMSE     Rsquared          MAE 
 # 1162.9890409    0.9158249  744.0980344
 
-#Step Model
-model2 <- step(model1, direction = "backward", trace = 0)
-summary(model2)
-prediction_values_lm2 <- predict(model2, test_diamonds)
-summary(prediction_values_lm2)
-postResample(prediction_values_lm2, test_diamonds$price)
-#just removes y
-# RMSE     Rsquared          MAE 
-# 1162.7095378    0.9158652  744.0409995 
 
-# Interactions
+# Improved Model
 model3 <- lm(price ~ clarity + color + cut + log(carat) + depth + table + x + z + clarity*cut + clarity*color + color*cut + carat*color + depth*cut + depth*color + x*depth + z*depth + I(x^2), train_diamonds)
 summary(model3)
 prediction_values_lm3 <- predict(model3, test_diamonds)
