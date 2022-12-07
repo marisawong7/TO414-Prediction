@@ -14,6 +14,7 @@ Resources:
 RMSE: https://www.statisticshowto.com/probability-and-statistics/regression-analysis/rmse-root-mean-square-error/
 MAE: https://www.statisticshowto.com/absolute-error/ 
 R^2: https://www.investopedia.com/terms/r/r-squared.asp 
+Information about diamonds data used: https://ggplot2.tidyverse.org/reference/diamonds.html?q=diamonds#ref-usage 
 
 ### Load Libraries
 
