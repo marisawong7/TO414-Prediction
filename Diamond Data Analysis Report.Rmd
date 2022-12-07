@@ -12,8 +12,11 @@ RMSE, Rsquared, and MAE commented in code and typed out in this document may be 
 
 Resources:
 RMSE: https://www.statisticshowto.com/probability-and-statistics/regression-analysis/rmse-root-mean-square-error/
+
 MAE: https://www.statisticshowto.com/absolute-error/ 
+
 R^2: https://www.investopedia.com/terms/r/r-squared.asp 
+
 Information about diamonds data used: https://ggplot2.tidyverse.org/reference/diamonds.html?q=diamonds#ref-usage 
 
 ### Load Libraries
@@ -419,38 +422,59 @@ postResample(stack_predictions_rt, stack_test$test_diamonds.price)
 RMSE, Rsquared, and MAE for the chosen models and the stacked model:
 
 Linear regression:
+
 - RMSE = 1033.2668851
+
 - Rsquared = 0.9335579
+
 - MAE = 628.8434045 
 
 KNN regression:
+
 - RMSE = 1049.7342230
+
 - Rsquared = 0.9348145
+
 - MAE = 550.5465499
 
 SVM:
+
 - RMSE = 689.49626
+
 - Rsquared = 0.97049
+
 - MAE = 353.32796
 
 ANN:
+
 - RMSE = 4.008756e+03
+
 - Rsquared = 2.494753e-06
+
 - MAE = 3.039719e+03
 
 Regression Tree:
+
 - RMSE = 1423.7770949
+
 - Rsquared = 0.8738465
+
 - MAE = 909.6853036
 
 Random Forest:
+
 - RMSE = 579.8030293
+
 - Rsquared = 0.9792354
+
 - MAE = 285.0036782
 
 Stacked Regression Tree:
+
 - RMSE = 842.2472785
+
 - Rsquared = 0.9547393
+
 - MAE = 533.0487923
 
 Comparing the RMSE, Rsquared, and MAE values for the chosen models and the stacked model, the random forest seems to be the best at predicting price since it has the smallest RMSE and MAE values and has the largest Rsquared value. The chosen random forest contains 500 trees. However, using the stacked regression tree can be more robust since it takes in features from a multitude of model type. Therefore, the final chosen model will be the stacked regression tree which uses the predicted values from the chosen linear regression, KNN regression, SVM, regression tree, and random forest. The stacked regression tree has an RMSE of 842.2472785, Rsquared of 0.9547393, and an MAE value of 533.0487923. This model does do a good job at predicting price based on the characteristics of diamonds. By doing this analysis, we are able to find a model which a seller of diamonds could use to price their inventory of diamonds. This results in potentially fairer prices since the pricing is based on the diamond's characteristics and how those characteristics impact price. By using this model to price one's diamonds for sale, the fair prices benefit both the seller (since they are not underpricing) and the buyer (since they are getting a fair price).
