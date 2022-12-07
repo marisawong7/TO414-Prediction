@@ -10,6 +10,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 RMSE, Rsquared, and MAE commented in code and typed out in this document may be different than output of code.
 
+Resources:
+RMSE: https://www.statisticshowto.com/probability-and-statistics/regression-analysis/rmse-root-mean-square-error/
+MAE: https://www.statisticshowto.com/absolute-error/ 
+R^2: https://www.investopedia.com/terms/r/r-squared.asp 
+
 ### Load Libraries
 
 ```{r}
@@ -133,8 +138,7 @@ postResample(prediction_values_knn1, test_diamonds$price)
 set.seed(300)
 grid <- expand.grid(k = c(1, 5, 9, 10, 15, 20, 25, 30, 35))
 ctrl <- trainControl(method = "cv", 
-                     number = 10,
-                     repeats = 10)
+                     number = 10)
 
 m <- train(price ~ ., data = train_diamonds, method = "knn",
            trControl = ctrl,
@@ -151,7 +155,7 @@ postResample(prediction_values_train_knn, test_diamonds$price)
 #1049.7342230    0.9348145  550.5465499 
 ```
 
-To build the KNN model, we start with a basic model with k-val = 5. Running this model, we get RMSE of 1037.3289972, Rsquared of 0.9343628, and MAE of 540.2361728. Then in order to improve the accuracy of our model, we use train control and expand grid to figure our the most efficient k-val, which is 9. With the best k-vel, we build a new knnreg model setting k = 9. Cansequently, we get an improvement in accuracy, with RMSE of 1049.7342230, Rsquared of 0.9348145, and MAE of 550.5465499. This is a balance of RMSE and Rsquared.
+To build the KNN model, we start with a basic model with k-val = 5. Running this model, we get RMSE of 1037.3289972, Rsquared of 0.9343628, and MAE of 540.2361728. Then in order to improve the accuracy of our model, we use train, control, and expand.grid functions to figure our the most efficient k-val, which is 9. With the best k-vel, we build a new knnreg model setting k = 9. Cansequently, we get an improvement in accuracy, with RMSE of 1049.7342230, Rsquared of 0.9348145, and MAE of 550.5465499. This is a balance of RMSE and Rsquared.
 
 # ANN 
 
@@ -227,7 +231,7 @@ postResample(prediction_values_SVM2, test_diamonds$price)
 
 ```
 
-To identify the best model, we tried running different kernels like tanhdot, laplacedot, and besseldot. Then, we selected the model with the kernel that had the lowest RMSE, highest r squared, and lowest MAE.  The best model was using the laplacedot kernel with a RMSE of 689.49626, R squared or 0.97049, and MAE of 353.32796. 
+To identify the best model, we tried running different kernels like tanhdot, laplacedot, and besseldot. Then, we selected the model with the kernel that had the lowest RMSE, highest R squared, and lowest MAE.  The best model was using the laplacedot kernel with a RMSE of 689.49626, R squared or 0.97049, and MAE of 353.32796. 
 
 ### Regression Tree
 
@@ -366,7 +370,7 @@ method info for train function: https://topepo.github.io/caret/train-models-by-t
 Random forest info for train function: https://topepo.github.io/caret/train-models-by-tag.html#random-forest 
 
 ```{r, cache = TRUE}
-# tune_grid_rf <- data.frame("mtry" = c(1:9)) # Test out number of predictor variables chosen
+# tune_grid_rf <- data.frame("mtry" = c(1:9))
 # ctrl_rf <- trainControl(method = "cv", 10) # use 10-fold cross-validation
 # set.seed(12345)
 # random_forests <- train(price ~ ., data = diamonds, method = "rf", tuneGrid = tune_grid_rf, trControl = ctrl_rf, ntree = 10)
@@ -375,20 +379,10 @@ Random forest info for train function: https://topepo.github.io/caret/train-mode
 # mtry = 9 has RMSE = 646.2072, Rsquared = 0.9737722, MAE = 311.5486
 ```
 
-Five random forests were created with varying amounts of trees to predict price using all predictor variables. 10, 100, 500, 200, and 50 trees were used. The random forest with 500 trees had the best RMSE, Rsquared, and MAE values among the other random forest models. The random forests with 100, 200, and 500 trees also has RMSE, Rsquared, and MAE values which are similar. In addition, the train function was used to test out the number of predictor variables chosen with 10-fold cross-validation. The chosen number of predictors to include is 9 since it has the lowest RMSE (it also has the lowest MAE and highest Rsquared value as well). The random forest with 500 trees was chosen since it has the smallest RMSE and MAE and the largest Rsquared value among the other random forests made. In addition, for the chosen model (as well as the other random forests created with different tree values), only positive price values are predicted for the testing data.
+Five random forests were created with varying amounts of trees to predict price using all predictor variables. 10, 100, 500, 200, and 50 trees were used. The random forest with 500 trees had the best RMSE, Rsquared, and MAE values among the other random forest models. The random forests with 100, 200, and 500 trees also has RMSE, Rsquared, and MAE values which are similar. In addition, the train function was used to test out the number of predictor variables chosen with 10-fold cross-validation. The chosen mtry is 9 since it has the lowest RMSE (it also has the lowest MAE and highest Rsquared value as well). The random forest with 500 trees was chosen since it has the smallest RMSE and MAE and the largest Rsquared value among the other random forests made. In addition, for the chosen model (as well as the other random forests created with different tree values), only positive price values are predicted for the testing data.
 
 ### Stacked Model
 ```{r}
-# Including ANN:
-# RMSE = 882.1945156
-# Rsquared = 0.9525313
-# MAE = 549.0019546
-#stack_model <- data.frame(prediction_values_lm2, prediction_values_train_knn, 
-#                          prediction_values_ANN2, prediction_values_SVM2, 
-#                          prediction_values_reg_tree1, 
-#                          prediction_values_random_forest3, test_diamonds$price)
-
-# Not including ANN:
 stack_model <- data.frame(prediction_values_lm2, prediction_values_train_knn, 
                           prediction_values_SVM2, 
                           prediction_values_reg_tree1, 
