@@ -8,7 +8,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Note: RMSE, Rsquared, and MAE commented in code and typed out in this document may be different than output of code
+RMSE, Rsquared, and MAE commented in code and typed out in this document may be different than output of code.
 
 ### Load Libraries
 
@@ -30,9 +30,7 @@ str(diamonds)
 nrow(diamonds)
 ```
 
-Data is from the ggplot2 library in R.
-
-For the second group project, we have chosen a dataset on diamonds. This dataset has 10 variables which includes the price as well as various characteristics about diamonds. There are 53940 observations of data in this dataset. Our business question is: how should we price diamonds based on certain characteristics? We will answer this question by creating models to predict the price using a variety of characteristics about diamonds. This addresses the business problem of setting prices for a seller's inventory of diamonds since it is important to set reasonable prices based on what other similar diamonds are selling for.
+For this project, we have chosen a dataset on diamonds which is from the ggplot2 library in R. This dataset has 10 variables which includes the price as well as various characteristics about diamonds. There are 53940 observations of data in this dataset. Our business question is: how should we price diamonds based on certain characteristics of the diamond? This addresses the business problem of setting prices for a seller's inventory of diamonds since it is important to set reasonable prices based on what other similar diamonds are selling for. We will answer this question by creating models using linear regression, KNN, SVM, decision trees, and random forests to predict the price using a variety of characteristics about diamonds. Then, using prediction values from the chosen model of all of these models, a stacked model was created to predict price.
 
 ### Clean Data
 
