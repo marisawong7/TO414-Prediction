@@ -30,7 +30,7 @@ str(diamonds)
 nrow(diamonds)
 ```
 
-For this project, we have chosen a dataset on diamonds which is from the ggplot2 library in R. This dataset has 10 variables which includes the price as well as various characteristics about diamonds. There are 53940 observations of data in this dataset. Our business question is: how can we predict the price of diamonds based on certain characteristics of the diamond? This addresses the business problem of setting prices for a seller's inventory of diamonds since it is important to set reasonable prices based on what other similar diamonds are selling for. Creating a model to predict the price of diamonds will be useful since it is reproduceable to get the price. In addition, the model can be retrained on different data if the pricing shifts. We will answer this question by creating models using linear regression, KNN, SVM, decision trees, and random forests to predict the price using a variety of characteristics about diamonds. Then, using prediction values from the chosen model of all of these models, a stacked model was created to predict price.
+For this project, we have chosen a dataset on diamonds which is from the ggplot2 library in R. This dataset has 10 variables which includes the price as well as various characteristics about diamonds. There are 53940 observations of data in this dataset. Our business question is: how can we predict the price of diamonds based on certain characteristics of the diamond? This addresses the business problem of setting prices for a seller's inventory of diamonds since it is important to set reasonable prices based on what other similar diamonds are selling for. Creating a model to predict the price of diamonds is useful since the model can be retrained on different data if the pricing shifts in the market. We will answer this question by creating models using linear regression, KNN, SVM, decision trees, and random forests to predict the price using a variety of characteristics about diamonds. Then, using prediction values from the chosen model of all of these models, a stacked model was created to predict price.
 
 ### Clean Data
 
@@ -152,7 +152,6 @@ postResample(prediction_values_train_knn, test_diamonds$price)
 ```
 
 To build the KNN model, we start with a basic model with k-val = 5. Running this model, we get RMSE of 1037.3289972, Rsquared of 0.9343628, and MAE of 540.2361728. Then in order to improve the accuracy of our model, we use train control and expand grid to figure our the most efficient k-val, which is 9. With the best k-vel, we build a new knnreg model setting k = 9. Cansequently, we get an improvement in accuracy, with RMSE of 1049.7342230, Rsquared of 0.9348145, and MAE of 550.5465499. This is a balance of RMSE and Rsquared.
-
 
 # ANN 
 
