@@ -112,7 +112,10 @@ postResample(prediction_values_lm1, test_diamonds$price)
 
 
 # Improved Model
-model2 <- lm(price ~ clarity + color + cut + log(carat) + depth + table + x + z + clarity*cut + clarity*color + color*cut + carat*color + depth*cut + depth*color + x*depth + z*depth + I(x^2), train_diamonds)
+model2 <- lm(price ~ clarity + color + cut + log(carat) + depth + table + 
+               x + z + clarity*cut + clarity*color + color*cut + 
+               carat*color + depth*cut + depth*color + x*depth + 
+               z*depth + I(x^2), train_diamonds)
 summary(model2)
 prediction_values_lm2 <- predict(model2, test_diamonds)
 summary(prediction_values_lm2)
@@ -185,8 +188,10 @@ To build the KNN model, we start with a basic model with k-val = 5. Running this
 # set.seed(12345)
 # library(neuralnet)
 # ANN_model2 <- neuralnet(formula = price ~ ., data = train_ANN_norm)
-# model4 <- train(price ~ x + y + z + carat, data = train_ANN_norm, method = "neuralnet")
-# model4 <- train(price ~ x + y + z + carat, data = train_ANN_norm, method = "neuralnet")
+# model4 <- train(price ~ x + y + z + carat, data = train_ANN_norm, 
+# method = "neuralnet")
+# model4 <- train(price ~ x + y + z + carat, data = train_ANN_norm, 
+# method = "neuralnet")
 # model3 <- lm(formula = price ~ x + y + z + carat, data = train_ANN_norm)
 # plot(ANN_model2)
 # prediction_values_ANN2 <- predict(ANN_model2, test_ANN_norm)
@@ -196,7 +201,8 @@ To build the KNN model, we start with a basic model with k-val = 5. Running this
 
 
 # # Model 3 (Adding Layers)
-# ANN_model3 <- neuralnet(formula = price ~ ., data = train_ANN_norm, hidden = c(2,3), threshold = 0.01, stepmax = 10^5)
+# ANN_model3 <- neuralnet(formula = price ~ ., data = train_ANN_norm, 
+# hidden = c(2,3), threshold = 0.01, stepmax = 10^5)
 # plot(ANN_model3)
 # prediction_values_ANN3 <- predict(ANN_model3, test_ANN_norm)
 # postResample(prediction_values_ANN3, test_ANN_norm$price)
@@ -374,7 +380,8 @@ Random forest info for train function: https://topepo.github.io/caret/train-mode
 # tune_grid_rf <- data.frame("mtry" = c(1:9))
 # ctrl_rf <- trainControl(method = "cv", 10) # use 10-fold cross-validation
 # set.seed(12345)
-# random_forests <- train(price ~ ., data = diamonds, method = "rf", tuneGrid = tune_grid_rf, trControl = ctrl_rf, ntree = 10)
+# random_forests <- train(price ~ ., data = diamonds, method = "rf", 
+# tuneGrid = tune_grid_rf, trControl = ctrl_rf, ntree = 10)
 # random_forests
 # mtry = 9 was chosen based on RMSE
 # mtry = 9 has RMSE = 646.2072, Rsquared = 0.9737722, MAE = 311.5486
