@@ -445,14 +445,6 @@ SVM:
 
 - MAE = 353.32796
 
-ANN:
-
-- RMSE = 4.008756e+03
-
-- Rsquared = 2.494753e-06
-
-- MAE = 3.039719e+03
-
 Regression Tree:
 
 - RMSE = 1423.7770949
